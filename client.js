@@ -5,7 +5,7 @@
   // Paste your private Render server URL here after deployment.
   // Example: const API_BASE_URL = "https://your-render-service-name.onrender.com";
   // Leave blank only if the front end and server are hosted on the same domain.
-  const API_BASE_URL = "";
+  const API_BASE_URL = "https://retirement-planner-tpyr.onrender.com";
 
 
   const defaults = {
