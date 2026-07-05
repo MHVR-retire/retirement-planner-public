@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Canadian Retirement Income Calculator - V2.0</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <main class="page">
+    <section class="hero">
+      <h1>Canadian Retirement Income Calculator</h1>
+      <p class="hero-legal">
+        For Educational Use Only. Results are estimates and should not replace professional financial advice. We will not be liable for any actions taken based on the results of this tool.
+      </p>
+    </section>
+
+    <section class="layout">
+      <aside class="panel input-panel">
+        <div class="panel-header">
+          <h2>Inputs</h2>
+          <p>All dollar values use Canadian dollars. Age-based inputs use years plus months; 0 months means exactly on the selected birthday.</p>
+        </div>
+
+        <div class="panel-body">
+          <details class="input-section" open>
+            <summary>Household setup</summary>
+            <div class="section-content">
+              <div class="field">
+                <label for="householdMode">Calculator mode</label>
+                <select id="householdMode">
+                  <option value="single">One person</option>
+                  <option value="couple">Two people</option>
+                </select>
+              </div>
+            </div>
+          </details>
+
+          <details class="input-section" open>
+            <summary>Person 1</summary>
+            <div class="section-content">
+          <div class="person-card">
+            <h3>Person 1</h3>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1CurrentAge">Current age</label>
+                <select id="p1CurrentAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1CurrentAgeMonth">Current age months</label>
+                <select id="p1CurrentAgeMonth"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1RetirementAge">Retirement age</label>
+                <select id="p1RetirementAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1RetirementAgeMonth">Retirement age months</label>
+                <select id="p1RetirementAgeMonth"></select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="p1LifeExpectancy">Age at death</label>
+              <select id="p1LifeExpectancy"></select>
+            </div>
+              <div class="field">
+                <label for="p1LifeExpectancyMonth">Age at death months</label>
+                <select id="p1LifeExpectancyMonth"></select>
+              </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1RRSPSavings">RRSP savings</label>
+                <select id="p1RRSPSavings"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1TFSASavings">TFSA savings</label>
+                <select id="p1TFSASavings"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1RRIFConversionAge">RRSP to RRIF conversion age</label>
+                <select id="p1RRIFConversionAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1RRIFConversionAgeMonth">RRIF conversion months</label>
+                <select id="p1RRIFConversionAgeMonth"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1NonRegisteredBalance">Current non-registered balance</label>
+                <select id="p1NonRegisteredBalance"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1RRSPContribution">RRSP contribution amount <span>monthly or annual below</span></label>
+                <select id="p1RRSPContribution"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1TFSAContribution">TFSA contribution amount <span>monthly or annual below</span></label>
+                <select id="p1TFSAContribution"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1CPPIncome">CPP annual income <span>baseline at age 65</span></label>
+                <select id="p1CPPIncome"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1OASIncome">OAS annual income <span>baseline at age 65</span></label>
+                <select id="p1OASIncome"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1CPPStartAge">CPP start age <span>60 to 70</span></label>
+                <select id="p1CPPStartAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1CPPStartAgeMonth">CPP start months</label>
+                <select id="p1CPPStartAgeMonth"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1OASStartAge">OAS start age <span>65 to 70</span></label>
+                <select id="p1OASStartAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1OASStartAgeMonth">OAS start months</label>
+                <select id="p1OASStartAgeMonth"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1DBPension">DB pension annual income</label>
+                <select id="p1DBPension"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1OtherIncome">Other annual income</label>
+                <select id="p1OtherIncome"></select>
+              </div>
+            </div>
+
+            <div class="two-col">
+              <div class="field">
+                <label for="p1OtherStartAge">Other income start age</label>
+                <select id="p1OtherStartAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1OtherStartAgeMonth">Other income start months</label>
+                <select id="p1OtherStartAgeMonth"></select>
+              </div>
+
+              <div class="field">
+                <label for="p1OtherEndAge">Other income end age</label>
+                <select id="p1OtherEndAge"></select>
+              </div>
+              <div class="field">
+                <label for="p1OtherEndAgeMonth">Other income end months</label>
+                <select id="p1OtherEndAgeMonth"></select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="p1EmploymentIncome">Current employment income until retirement <span>pre-tax annual</span></label>
+              <select id="p1EmploymentIncome"></select>
+            </div>
+          </div>
+            </div>
+          </details>
+
+          <div id="person2Block">
+            <details class="input-section" open>
+              <summary>Person 2</summary>
+              <div class="section-content">
+            <div class="person-card">
+              <h3>Person 2</h3>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2CurrentAge">Current age</label>
+                  <select id="p2CurrentAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2CurrentAgeMonth">Current age months</label>
+                <select id="p2CurrentAgeMonth"></select>
+              </div>
+
+                <div class="field">
+                  <label for="p2RetirementAge">Retirement age</label>
+                  <select id="p2RetirementAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2RetirementAgeMonth">Retirement age months</label>
+                <select id="p2RetirementAgeMonth"></select>
+              </div>
+              </div>
+
+              <div class="field">
+                <label for="p2LifeExpectancy">Age at death</label>
+                <select id="p2LifeExpectancy"></select>
+              </div>
+              <div class="field">
+                <label for="p2LifeExpectancyMonth">Age at death months</label>
+                <select id="p2LifeExpectancyMonth"></select>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2RRSPSavings">RRSP savings</label>
+                  <select id="p2RRSPSavings"></select>
+                </div>
+
+                <div class="field">
+                  <label for="p2TFSASavings">TFSA savings</label>
+                  <select id="p2TFSASavings"></select>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2RRIFConversionAge">RRSP to RRIF conversion age</label>
+                  <select id="p2RRIFConversionAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2RRIFConversionAgeMonth">RRIF conversion months</label>
+                <select id="p2RRIFConversionAgeMonth"></select>
+              </div>
+
+                <div class="field">
+                  <label for="p2NonRegisteredBalance">Current non-registered balance</label>
+                  <select id="p2NonRegisteredBalance"></select>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2RRSPContribution">RRSP contribution amount <span>monthly or annual below</span></label>
+                  <select id="p2RRSPContribution"></select>
+                </div>
+
+                <div class="field">
+                  <label for="p2TFSAContribution">TFSA contribution amount <span>monthly or annual below</span></label>
+                  <select id="p2TFSAContribution"></select>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2CPPIncome">CPP annual income <span>baseline at age 65</span></label>
+                  <select id="p2CPPIncome"></select>
+                </div>
+
+                <div class="field">
+                  <label for="p2OASIncome">OAS annual income <span>baseline at age 65</span></label>
+                  <select id="p2OASIncome"></select>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2CPPStartAge">CPP start age <span>60 to 70</span></label>
+                  <select id="p2CPPStartAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2CPPStartAgeMonth">CPP start months</label>
+                <select id="p2CPPStartAgeMonth"></select>
+              </div>
+
+                <div class="field">
+                  <label for="p2OASStartAge">OAS start age <span>65 to 70</span></label>
+                  <select id="p2OASStartAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2OASStartAgeMonth">OAS start months</label>
+                <select id="p2OASStartAgeMonth"></select>
+              </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2DBPension">DB pension annual income</label>
+                  <select id="p2DBPension"></select>
+                </div>
+
+                <div class="field">
+                  <label for="p2OtherIncome">Other annual income</label>
+                  <select id="p2OtherIncome"></select>
+                </div>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="p2OtherStartAge">Other income start age</label>
+                  <select id="p2OtherStartAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2OtherStartAgeMonth">Other income start months</label>
+                <select id="p2OtherStartAgeMonth"></select>
+              </div>
+
+                <div class="field">
+                  <label for="p2OtherEndAge">Other income end age</label>
+                  <select id="p2OtherEndAge"></select>
+                </div>
+              <div class="field">
+                <label for="p2OtherEndAgeMonth">Other income end months</label>
+                <select id="p2OtherEndAgeMonth"></select>
+              </div>
+              </div>
+
+              <div class="field">
+                <label for="p2EmploymentIncome">Current employment income until retirement <span>pre-tax annual</span></label>
+                <select id="p2EmploymentIncome"></select>
+              </div>
+            </div>
+              </div>
+            </details>
+          </div>
+
+          <details class="input-section" open>
+            <summary>Income target and display</summary>
+            <div class="section-content">
+
+          <div class="field">
+            <label for="desiredIncome">Desired household retirement income</label>
+            <select id="desiredIncome"></select>
+          </div>
+
+          <div class="field">
+            <label for="desiredIncomeFrequency">Desired income is</label>
+            <select id="desiredIncomeFrequency">
+              <option value="monthly">Monthly desired income</option>
+              <option value="annual">Annual desired income</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="incomeView">Desired income view</label>
+            <select id="incomeView">
+              <option value="beforeTax">Before tax</option>
+              <option value="afterTax">After tax</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="survivorIncomeNeed">Survivor income need <span>after first death</span></label>
+            <select id="survivorIncomeNeed">
+              <option value="100">100% of household target</option>
+              <option value="90">90% of household target</option>
+              <option value="80" selected>80% of household target</option>
+              <option value="70">70% of household target</option>
+              <option value="60">60% of household target</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="chartFrequency">Chart display</label>
+            <select id="chartFrequency">
+              <option value="monthly">Monthly income</option>
+              <option value="annual">Annual income</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="chartTaxView">Chart display tax view</label>
+            <select id="chartTaxView">
+              <option value="beforeTax">Before tax chart</option>
+              <option value="afterTax">After tax chart</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="dollarView">Dollar view</label>
+            <select id="dollarView">
+              <option value="constant">Constant dollar view</option>
+              <option value="inflationAdjusted">Inflation adjusted view</option>
+            </select>
+          </div>
+
+
+            </div>
+          </details>
+
+          <details class="input-section">
+            <summary>Income requirement adjustments</summary>
+            <div class="section-content">
+
+          <p class="disclaimer">
+            Add up to five exact-dollar changes to the household income requirement. Each change begins when the selected person reaches the selected age.
+            The entered amount is not inflated or scaled, so a $500 monthly decrease always reduces the requirement by exactly $6,000 per year. Use the description field to label each adjustment in the projection table.
+          </p>
+
+          <div class="person-card">
+            <h3>Adjustment 1</h3>
+            <div class="field">
+              <label for="adjustment1Description">Description</label>
+              <input type="text" id="adjustment1Description" placeholder="e.g., Mortgage paid off, travel spending, care costs" />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment1Person">Applies when this person reaches age</label>
+                <select id="adjustment1Person">
+                  <option value="none">Not used</option>
+                  <option value="p1">Person 1</option>
+                  <option value="p2">Person 2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment1Age">Age</label>
+                <select id="adjustment1Age"></select>
+              </div>
+              <div class="field">
+                <label for="adjustment1AgeMonth">Age months</label>
+                <select id="adjustment1AgeMonth"></select>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment1Direction">Change type</label>
+                <select id="adjustment1Direction">
+                  <option value="increase">Increase income requirement</option>
+                  <option value="decrease">Decrease income requirement</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment1Amount">Change amount</label>
+                <select id="adjustment1Amount"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="adjustment1Frequency">Amount is</label>
+              <select id="adjustment1Frequency">
+                <option value="monthly">Monthly amount</option>
+                <option value="annual">Annual amount</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <h3>Adjustment 2</h3>
+            <div class="field">
+              <label for="adjustment2Description">Description</label>
+              <input type="text" id="adjustment2Description" placeholder="e.g., Mortgage paid off, travel spending, care costs" />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment2Person">Applies when this person reaches age</label>
+                <select id="adjustment2Person">
+                  <option value="none">Not used</option>
+                  <option value="p1">Person 1</option>
+                  <option value="p2">Person 2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment2Age">Age</label>
+                <select id="adjustment2Age"></select>
+              </div>
+              <div class="field">
+                <label for="adjustment2AgeMonth">Age months</label>
+                <select id="adjustment2AgeMonth"></select>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment2Direction">Change type</label>
+                <select id="adjustment2Direction">
+                  <option value="increase">Increase income requirement</option>
+                  <option value="decrease">Decrease income requirement</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment2Amount">Change amount</label>
+                <select id="adjustment2Amount"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="adjustment2Frequency">Amount is</label>
+              <select id="adjustment2Frequency">
+                <option value="monthly">Monthly amount</option>
+                <option value="annual">Annual amount</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <h3>Adjustment 3</h3>
+            <div class="field">
+              <label for="adjustment3Description">Description</label>
+              <input type="text" id="adjustment3Description" placeholder="e.g., Mortgage paid off, travel spending, care costs" />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment3Person">Applies when this person reaches age</label>
+                <select id="adjustment3Person">
+                  <option value="none">Not used</option>
+                  <option value="p1">Person 1</option>
+                  <option value="p2">Person 2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment3Age">Age</label>
+                <select id="adjustment3Age"></select>
+              </div>
+              <div class="field">
+                <label for="adjustment3AgeMonth">Age months</label>
+                <select id="adjustment3AgeMonth"></select>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment3Direction">Change type</label>
+                <select id="adjustment3Direction">
+                  <option value="increase">Increase income requirement</option>
+                  <option value="decrease">Decrease income requirement</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment3Amount">Change amount</label>
+                <select id="adjustment3Amount"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="adjustment3Frequency">Amount is</label>
+              <select id="adjustment3Frequency">
+                <option value="monthly">Monthly amount</option>
+                <option value="annual">Annual amount</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <h3>Adjustment 4</h3>
+            <div class="field">
+              <label for="adjustment4Description">Description</label>
+              <input type="text" id="adjustment4Description" placeholder="e.g., Mortgage paid off, travel spending, care costs" />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment4Person">Applies when this person reaches age</label>
+                <select id="adjustment4Person">
+                  <option value="none">Not used</option>
+                  <option value="p1">Person 1</option>
+                  <option value="p2">Person 2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment4Age">Age</label>
+                <select id="adjustment4Age"></select>
+              </div>
+              <div class="field">
+                <label for="adjustment4AgeMonth">Age months</label>
+                <select id="adjustment4AgeMonth"></select>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment4Direction">Change type</label>
+                <select id="adjustment4Direction">
+                  <option value="increase">Increase income requirement</option>
+                  <option value="decrease">Decrease income requirement</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment4Amount">Change amount</label>
+                <select id="adjustment4Amount"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="adjustment4Frequency">Amount is</label>
+              <select id="adjustment4Frequency">
+                <option value="monthly">Monthly amount</option>
+                <option value="annual">Annual amount</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="person-card">
+            <h3>Adjustment 5</h3>
+            <div class="field">
+              <label for="adjustment5Description">Description</label>
+              <input type="text" id="adjustment5Description" placeholder="e.g., Mortgage paid off, travel spending, care costs" />
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment5Person">Applies when this person reaches age</label>
+                <select id="adjustment5Person">
+                  <option value="none">Not used</option>
+                  <option value="p1">Person 1</option>
+                  <option value="p2">Person 2</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment5Age">Age</label>
+                <select id="adjustment5Age"></select>
+              </div>
+              <div class="field">
+                <label for="adjustment5AgeMonth">Age months</label>
+                <select id="adjustment5AgeMonth"></select>
+              </div>
+            </div>
+            <div class="two-col">
+              <div class="field">
+                <label for="adjustment5Direction">Change type</label>
+                <select id="adjustment5Direction">
+                  <option value="increase">Increase income requirement</option>
+                  <option value="decrease">Decrease income requirement</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="adjustment5Amount">Change amount</label>
+                <select id="adjustment5Amount"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="adjustment5Frequency">Amount is</label>
+              <select id="adjustment5Frequency">
+                <option value="monthly">Monthly amount</option>
+                <option value="annual">Annual amount</option>
+              </select>
+            </div>
+          </div>
+
+            </div>
+          </details>
+
+
+          <details class="input-section">
+            <summary>Lump sum additions / removals</summary>
+            <div class="section-content">
+
+              <p class="disclaimer">
+                Add up to five one-time lump sum additions or removals from available investments. Amounts are exact dollars and are not inflation adjusted. Use the description field to label what each lump sum is for.
+                The available balance display estimates the selected account balance in the exact projection month when the selected age is reached, before the lump sum is removed.
+              </p>
+
+              <div class="person-card">
+                <h3>Lump sum removal 1</h3>
+                <div class="field">
+                  <label for="lumpSum1Description">Description</label>
+                  <input type="text" id="lumpSum1Description" placeholder="e.g., New car, home renovation, gift to family" />
+                </div>
+                <div class="field">
+                  <label for="lumpSum1Type">Lump sum type</label>
+                  <select id="lumpSum1Type">
+                    <option value="remove">Remove from selected investment</option>
+                    <option value="add">Add to selected investment</option>
+                  </select>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum1Person">Person</label>
+                    <select id="lumpSum1Person">
+                      <option value="none">Not used</option>
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum1Age">Age of removal</label>
+                    <select id="lumpSum1Age"></select>
+                  </div>
+              <div class="field">
+                <label for="lumpSum1AgeMonth">Age months</label>
+                <select id="lumpSum1AgeMonth"></select>
+              </div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum1Account">Investment account</label>
+                    <select id="lumpSum1Account">
+                      <option value="rrsp">RRSP/RRIF</option>
+                      <option value="tfsa">TFSA</option>
+                      <option value="nonRegistered">Non-registered</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum1Amount">Amount to add/remove</label>
+                    <select id="lumpSum1Amount"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Available balance at selected age</label>
+                  <div class="readonly-value" id="lumpSum1AvailableBalance">$0</div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Lump sum removal 2</h3>
+                <div class="field">
+                  <label for="lumpSum2Description">Description</label>
+                  <input type="text" id="lumpSum2Description" placeholder="e.g., New car, home renovation, gift to family" />
+                </div>
+                <div class="field">
+                  <label for="lumpSum2Type">Lump sum type</label>
+                  <select id="lumpSum2Type">
+                    <option value="remove">Remove from selected investment</option>
+                    <option value="add">Add to selected investment</option>
+                  </select>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum2Person">Person</label>
+                    <select id="lumpSum2Person">
+                      <option value="none">Not used</option>
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum2Age">Age of removal</label>
+                    <select id="lumpSum2Age"></select>
+                  </div>
+              <div class="field">
+                <label for="lumpSum2AgeMonth">Age months</label>
+                <select id="lumpSum2AgeMonth"></select>
+              </div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum2Account">Investment account</label>
+                    <select id="lumpSum2Account">
+                      <option value="rrsp">RRSP/RRIF</option>
+                      <option value="tfsa">TFSA</option>
+                      <option value="nonRegistered">Non-registered</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum2Amount">Amount to add/remove</label>
+                    <select id="lumpSum2Amount"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Available balance at selected age</label>
+                  <div class="readonly-value" id="lumpSum2AvailableBalance">$0</div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Lump sum removal 3</h3>
+                <div class="field">
+                  <label for="lumpSum3Description">Description</label>
+                  <input type="text" id="lumpSum3Description" placeholder="e.g., New car, home renovation, gift to family" />
+                </div>
+                <div class="field">
+                  <label for="lumpSum3Type">Lump sum type</label>
+                  <select id="lumpSum3Type">
+                    <option value="remove">Remove from selected investment</option>
+                    <option value="add">Add to selected investment</option>
+                  </select>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum3Person">Person</label>
+                    <select id="lumpSum3Person">
+                      <option value="none">Not used</option>
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum3Age">Age of removal</label>
+                    <select id="lumpSum3Age"></select>
+                  </div>
+              <div class="field">
+                <label for="lumpSum3AgeMonth">Age months</label>
+                <select id="lumpSum3AgeMonth"></select>
+              </div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum3Account">Investment account</label>
+                    <select id="lumpSum3Account">
+                      <option value="rrsp">RRSP/RRIF</option>
+                      <option value="tfsa">TFSA</option>
+                      <option value="nonRegistered">Non-registered</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum3Amount">Amount to add/remove</label>
+                    <select id="lumpSum3Amount"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Available balance at selected age</label>
+                  <div class="readonly-value" id="lumpSum3AvailableBalance">$0</div>
+                </div>
+              </div>
+              <div class="person-card">
+                <h3>Lump sum removal 4</h3>
+                <div class="field">
+                  <label for="lumpSum4Description">Description</label>
+                  <input type="text" id="lumpSum4Description" placeholder="e.g., New car, home renovation, gift to family" />
+                </div>
+                <div class="field">
+                  <label for="lumpSum4Type">Lump sum type</label>
+                  <select id="lumpSum4Type">
+                    <option value="remove">Remove from selected investment</option>
+                    <option value="add">Add to selected investment</option>
+                  </select>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum4Person">Person</label>
+                    <select id="lumpSum4Person">
+                      <option value="none">Not used</option>
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum4Age">Age of removal</label>
+                    <select id="lumpSum4Age"></select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum4AgeMonth">Age months</label>
+                    <select id="lumpSum4AgeMonth"></select>
+                  </div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum4Account">Investment account</label>
+                    <select id="lumpSum4Account">
+                      <option value="rrsp">RRSP/RRIF</option>
+                      <option value="tfsa">TFSA</option>
+                      <option value="nonRegistered">Non-registered</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum4Amount">Amount to add/remove</label>
+                    <select id="lumpSum4Amount"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Available balance at selected age</label>
+                  <div class="readonly-value" id="lumpSum4AvailableBalance">$0</div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Lump sum removal 5</h3>
+                <div class="field">
+                  <label for="lumpSum5Description">Description</label>
+                  <input type="text" id="lumpSum5Description" placeholder="e.g., New car, home renovation, gift to family" />
+                </div>
+                <div class="field">
+                  <label for="lumpSum5Type">Lump sum type</label>
+                  <select id="lumpSum5Type">
+                    <option value="remove">Remove from selected investment</option>
+                    <option value="add">Add to selected investment</option>
+                  </select>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum5Person">Person</label>
+                    <select id="lumpSum5Person">
+                      <option value="none">Not used</option>
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum5Age">Age of removal</label>
+                    <select id="lumpSum5Age"></select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum5AgeMonth">Age months</label>
+                    <select id="lumpSum5AgeMonth"></select>
+                  </div>
+                </div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="lumpSum5Account">Investment account</label>
+                    <select id="lumpSum5Account">
+                      <option value="rrsp">RRSP/RRIF</option>
+                      <option value="tfsa">TFSA</option>
+                      <option value="nonRegistered">Non-registered</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="lumpSum5Amount">Amount to add/remove</label>
+                    <select id="lumpSum5Amount"></select>
+                  </div>
+                </div>
+                <div class="field">
+                  <label>Available balance at selected age</label>
+                  <div class="readonly-value" id="lumpSum5AvailableBalance">$0</div>
+                </div>
+              </div>
+
+
+            </div>
+          </details>
+
+
+
+
+          <details class="input-section">
+            <summary>Home value and sale</summary>
+            <div class="section-content">
+              <p class="disclaimer">
+                Enter the current market value of the home and an expected annual market growth rate. If you choose to sell the home, the projected home value is added to the selected person's non-registered account. If you choose to downsize, enter the current value of the replacement home. The planner projects both the current home and replacement home using the same home growth rate, invests only the projected difference, and keeps the replacement home in the projection.
+              </p>
+
+              <div class="field">
+                <label for="homeCurrentValue">Current home value</label>
+                <select id="homeCurrentValue"></select>
+              </div>
+
+              <div class="field">
+                <label for="homeGrowthRate">Home market growth rate</label>
+                <select id="homeGrowthRate"></select>
+              </div>
+
+              <div class="field">
+                <label for="sellHomeOption">Sell home during projection?</label>
+                <select id="sellHomeOption">
+                  <option value="no">No, keep home to final age</option>
+                  <option value="yes">Yes, sell home and invest proceeds</option>
+                </select>
+              </div>
+
+              <div class="field" id="homeSaleTypeField">
+                <label for="homeSaleType">Home sale type</label>
+                <select id="homeSaleType">
+                  <option value="fullSale">Sell home and invest full proceeds</option>
+                  <option value="downsize">Downsize and invest the difference</option>
+                </select>
+              </div>
+
+              <div class="field" id="newHomePriceField">
+                <label for="newHomePrice">Current value of replacement home <span>downsizing only</span></label>
+                <select id="newHomePrice"></select>
+              </div>
+
+              <div class="two-col">
+                <div class="field">
+                  <label for="homeSalePerson">Sale timing based on</label>
+                  <select id="homeSalePerson">
+                    <option value="p1">Person 1 age</option>
+                    <option value="p2">Person 2 age</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="homeSaleAge">Sale age</label>
+                  <select id="homeSaleAge"></select>
+                </div>
+                <div class="field">
+                  <label for="homeSaleAgeMonth">Sale age months</label>
+                  <select id="homeSaleAgeMonth"></select>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="input-section" open>
+            <summary>Rates and assumptions</summary>
+            <div class="section-content">
+
+          <div class="field">
+            <label for="contributionFrequency">RRSP / TFSA contribution amounts are</label>
+            <select id="contributionFrequency">
+              <option value="monthly">Monthly contributions</option>
+              <option value="annual">Annual contributions</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="province">Province / territory for income tax</label>
+            <select id="province">
+              <option value="AB">Alberta</option>
+              <option value="BC">British Columbia</option>
+              <option value="MB">Manitoba</option>
+              <option value="NB">New Brunswick</option>
+              <option value="NL">Newfoundland and Labrador</option>
+              <option value="NS">Nova Scotia</option>
+              <option value="NT">Northwest Territories</option>
+              <option value="NU">Nunavut</option>
+              <option value="ON">Ontario</option>
+              <option value="PE">Prince Edward Island</option>
+              <option value="QC">Quebec</option>
+              <option value="SK">Saskatchewan</option>
+              <option value="YT">Yukon</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="returnRate">Investment return <span>before retirement</span></label>
+            <select id="returnRate"></select>
+          </div>
+
+          <div class="field">
+            <label for="postRetirementReturnRate">Post-retirement investment return</label>
+            <select id="postRetirementReturnRate"></select>
+          </div>
+
+          <div class="field">
+            <label for="inflationRate">Estimated inflation rate</label>
+            <select id="inflationRate"></select>
+          </div>
+            </div>
+          </details>
+
+          <div class="button-row">
+            <button class="primary" id="calculateBtn">Calculate</button>
+            <button class="secondary" id="resetBtn">Reset defaults</button>
+          </div>
+
+          <div class="button-row three">
+            <button class="secondary" id="saveInputsBtn" type="button">Save</button>
+            <button class="secondary" id="loadInputsBtn" type="button">Load</button>
+            <button class="secondary" id="clearSavedInputsBtn" type="button">Clear saved</button>
+          </div>
+
+          <div class="button-row">
+            <button class="secondary" id="exportInputsBtn" type="button">Export JSON</button>
+            <button class="secondary" id="importInputsBtn" type="button">Import JSON</button>
+          </div>
+
+          <input class="hidden-file-input" type="file" id="importFileInput" accept="application/json,.json" />
+
+          <p class="disclaimer">
+            This is an educational calculator, not financial, tax, or investment advice. Inputs autosave in this browser and can also be exported/imported as JSON. Chart display can show before-tax or simplified after-tax income. Tax uses simplified 2026 federal and provincial/territorial brackets and basic personal amounts only. CPP/OAS start-age adjustments use month-aware federal percentage rules and assume the entered CPP/OAS amounts are age-65 baselines. OAS is increased by 10% from age 75 onward. In two-person mode, Person 2 receives a simplified survivor CPP amount equal to 50% of Person 1's adjusted CPP after Person 1 dies. Other annual income is included only between the selected start and end ages. Income requirement adjustments are applied from the selected person's selected age onward as exact dollar changes, with no inflation scaling. Lump sum additions/removals are one-time absolute dollar changes to the selected person's selected account and are not inflation adjusted. Month-aware lump sum additions/removals and home sale proceeds are applied in the exact selected projection month, before that month's investment growth and withdrawal calculations. RRSP/TFSA contributions, retirement withdrawals, RRIF minimums, and investment compounding are modelled monthly, then summarized annually. Mandatory RRIF minimum withdrawals are shown separately in light blue. Forced RRIF withdrawals above required income are moved to the non-registered account and continue to grow at the post-retirement return. Investment returns are reduced by inflation only in constant dollar view; inflation adjusted view uses nominal returns. Spousal RRSP/TFSA transfer is simplified:
+            remaining registered and TFSA balances are assumed to transfer fully to the survivor when one person dies.
+          </p>
+        </div>
+      </aside>
+
+      <section class="results-panel">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Retirement projection</h2>
+            <p>Income is projected from the first retirement period through the last life expectancy, with age timing tracked internally in whole months so 0 months is a valid exact-birthday choice. Stacked bars start at the first retirement year. The red line shows the exact desired income after adjustments, while the dashed black line shows the baseline desired income before adjustments. Hovering over the chart shows total income, target income, surplus or shortfall, and tax context.</p>
+          </div>
+
+          <div class="panel-body">
+            <div id="statusBadge" class="status good">Projection ready</div>
+
+            <div class="summary-grid">
+              <div class="metric">
+                <div class="label">P1 investments at retirement</div>
+                <div class="value" id="metricRRSP">$0</div>
+                <div class="note">RRSP/RRIF + TFSA + non-reg.</div>
+              </div>
+
+              <div class="metric">
+                <div class="label">P2 investments at retirement</div>
+                <div class="value" id="metricTFSA">$0</div>
+                <div class="note">RRSP/RRIF + TFSA + non-reg.</div>
+              </div>
+
+              <div class="metric compact-note" id="metricTargetCard" title="Target income at the first retirement year. Hover text updates after calculation.">
+                <div class="label">Target income <span class="info-dot">i</span></div>
+                <div class="value" id="metricTarget">$0</div>
+                <div class="note" id="metricTargetNote">Target view.</div>
+              </div>
+
+              <div class="metric compact-note" id="metricRemainingCard" title="Final projected total. Detailed table shows opening and ending RRSP/RRIF balances each year.">
+                <div class="label">Final savings <span class="info-dot">i</span></div>
+                <div class="value" id="metricRemaining">$0</div>
+                <div class="note" id="metricRemainingNote">Final projected total.</div>
+              </div>
+
+              <div class="metric compact-note" id="metricGoalCard" title="Shows covered retirement income plus final savings divided by lifetime required income. Surplus in one year is not used to mask a shortfall in another year unless it remains as ending savings.">
+                <div class="label">Funding ratio <span class="info-dot">i</span></div>
+                <div class="value" id="metricGoalPercent">0%</div>
+                <div class="note" id="metricGoalNote">All retirement years.</div>
+              </div>
+
+              <div class="metric compact-note" id="metricHomeCard" title="Projected home value at the final projection age. If the home is sold, sale proceeds are moved to non-registered investments and the remaining home value becomes $0.">
+                <div class="label">Home value <span class="info-dot">i</span></div>
+                <div class="value" id="metricHomeValue">$0</div>
+                <div class="note" id="metricHomeNote">Final age.</div>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="scenario-summary" id="scenarioSummary">
+                <div class="scenario-summary-title">Retirement scenario</div>
+                <div class="scenario-summary-grid">
+                  <div class="scenario-summary-item">
+                    <div class="label">Desired annual income pre-tax</div>
+                    <div class="value" id="scenarioDesiredPreTax">$0</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Actual monthly income after-tax</div>
+                    <div class="value" id="scenarioActualAfterTax">$0</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Pre-retirement return</div>
+                    <div class="value" id="scenarioPreReturn">0%</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Post-retirement return</div>
+                    <div class="value" id="scenarioPostReturn">0%</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Inflation rate</div>
+                    <div class="value" id="scenarioInflation">0%</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Home growth rate</div>
+                    <div class="value" id="scenarioHomeGrowth">0%</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Person 1 retirement age</div>
+                    <div class="value" id="scenarioP1RetAge">0y 0m</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Person 2 retirement age</div>
+                    <div class="value" id="scenarioP2RetAge">N/A</div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="incomeChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <h3>RRSP and TFSA balances</h3>
+                  <p>Balance chart starts at the first retirement year. Non-registered balances include excess RRIF minimum withdrawals and grow at the post-retirement return.</p>
+                </div>
+              </div>
+              <div class="balance-wrap">
+                <canvas id="balanceChart"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <div class="chart-title">
+                <div>
+                  <h3>Projection tables</h3>
+                  <p>All projection years are shown. Use the collapse/expand controls to open the household, Person 1, and Person 2 tables as needed. Each table scrolls within a 420px area. Funding ratio equals covered income plus ending savings divided by total required income. Annual surplus is not counted beyond that year's target unless it remains as final savings.</p>
+                </div>
+              </div>
+
+              <details class="projection-detail" open>
+                <summary>Household summary</summary>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                    <tr>
+                      <th>Year</th>
+                      <th>Ages</th>
+                      <th>Alive</th>
+                      <th>Target income</th>
+                      <th>Baseline target</th>
+                      <th>Total income</th>
+                      <th>Surplus / shortfall</th>
+                      <th>Req. change</th>
+                      <th>Adjustment description</th>
+                      <th>Lump sum net change</th>
+                      <th>Lump sum purpose</th>
+                      <th>Lump sum shortfall</th>
+                      <th>Combined RRSP/RRIF</th>
+                      <th>Ending TFSA</th>
+                      <th>Ending non-reg</th>
+                    </tr>
+                  </thead>
+                  <tbody id="householdProjectionTable"></tbody>
+                </table>
+              </div>
+
+              <h4>Person 1 detail</h4>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Year</th>
+                      <th>Age</th>
+                      <th>CPP</th>
+                      <th>OAS</th>
+                      <th>Pension</th>
+                      <th>Other</th>
+                      <th>Employment</th>
+                      <th>RRIF minimum</th>
+                      <th>Add'l RRSP/RRIF</th>
+                      <th>TFSA withdrawal</th>
+                      <th>Non-reg withdrawal</th>
+                      <th>Total income</th>
+                      <th>Taxable income</th>
+                      <th>Avg tax rate</th>
+                      <th>Open RRSP/RRIF</th>
+                      <th>End RRSP/RRIF</th>
+                      <th>End TFSA</th>
+                      <th>End non-reg</th>
+                    </tr>
+                  </thead>
+                  <tbody id="person1ProjectionTable"></tbody>
+                </table>
+              </div>
+
+              <div id="person2ProjectionBlock">
+                <h4>Person 2 detail</h4>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Year</th>
+                        <th>Age</th>
+                        <th>CPP</th>
+                        <th>OAS</th>
+                        <th>Pension</th>
+                        <th>Other</th>
+                        <th>Employment</th>
+                        <th>RRIF minimum</th>
+                        <th>Add'l RRSP/RRIF</th>
+                        <th>TFSA withdrawal</th>
+                        <th>Non-reg withdrawal</th>
+                        <th>Total income</th>
+                        <th>Taxable income</th>
+                        <th>Avg tax rate</th>
+                        <th>Open RRSP/RRIF</th>
+                        <th>End RRSP/RRIF</th>
+                        <th>End TFSA</th>
+                        <th>End non-reg</th>
+                      </tr>
+                    </thead>
+                      <tbody id="person2ProjectionTable"></tbody>
+                    </table>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <aside class="ad-panel">
+        <div class="panel">
+          <div class="panel-header">
+            <h2>Sponsors</h2>
+            <p>Partner, sponsor, advertising, and educational placement space.</p>
+          </div>
+          <div class="panel-body">
+            <div class="featured-partner">
+              <div class="eyebrow">Featured partner</div>
+              <h3>Retirement planning review</h3>
+              <p>Reserve this premium placement for a trusted retirement professional, advisor partner, or your own service offering.</p>
+              <ul><li>Retirement income planning</li><li>Tax-efficient withdrawals</li><li>Estate and survivor planning</li></ul>
+              <a class="partner-button" href="#" aria-label="Featured partner call to action">Learn more</a>
+            </div>
+            <div class="ad-scroll">
+              <div class="ad-slot" id="adSlot1"><div class="eyebrow">Advertisement</div><div class="ad-placeholder">Ad Slot 1<br>300 x 250</div><div class="ad-note">Suggested use: advisor, insurance, mortgage, banking, or retirement partner.</div></div>
+              <div class="ad-slot" id="adSlot2"><div class="eyebrow">Advertisement</div><div class="ad-placeholder">Ad Slot 2<br>300 x 250</div><div class="ad-note">Can be replaced later with Google AdSense or a direct sponsor.</div></div>
+              <div class="ad-slot" id="adSlot3"><div class="eyebrow">Advertisement</div><div class="ad-placeholder tall">Ad Slot 3<br>300 x 600</div><div class="ad-note">Optional taller placement for premium sponsor inventory.</div></div>
+              <div class="education-card"><div class="eyebrow">Educational content</div><h3>Article placement</h3><p>Use this space later for articles such as CPP timing, RRIF withdrawals, TFSA vs RRSP, or retirement tax tips.</p></div>
+              <div class="v2-footer">Version 2.0 protected architecture. Educational use only. Replace sponsor and ad placeholders before publishing commercially.</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+
+<script src="client.js"></script>
+</body>
+</html>
