@@ -1,6 +1,19 @@
 Retirement Planner V2.0 - Public Front End
 
-Safe for public GitHub. Contains UI only, not the protected retirement calculation engine.
+Upload these files to the public GitHub repository:
+- index.html
+- styles.css
+- client.js
 
-After deploying the private Render server, open client.js and set:
-const API_BASE_URL = "https://your-render-service-name.onrender.com";
+This public package contains the user interface, charts, JSON save/load, and advertising layout.
+It does not contain the private retirement projection formulas.
+
+After deploying the private Render server:
+1. Open client.js.
+2. Find:
+   const API_BASE_URL = "";
+3. Replace it with your Render URL, for example:
+   const API_BASE_URL = "https://your-render-service-name.onrender.com";
+4. Commit that change to GitHub.
+
+Do not put private/calculator-private.html, server.js, or package.json in the public repository.

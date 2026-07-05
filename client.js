@@ -2,8 +2,9 @@
   let incomeChart;
   let balanceChart;
 
-  // Paste your private Render server URL between the quotes after deployment.
-  // Example: const API_BASE_URL = "https://your-service-name.onrender.com";
+  // Paste your private Render server URL here after deployment.
+  // Example: const API_BASE_URL = "https://your-render-service-name.onrender.com";
+  // Leave blank only if the front end and server are hosted on the same domain.
   const API_BASE_URL = "";
 
 
@@ -311,13 +312,35 @@
   }
 
 
-  // Tax brackets and formulas run only on the private Render server.
+  // Tax tables and retirement calculation formulas run only on the private Render server.
+
   // progressiveTax runs only on the private Render server.
+
+
+  
+
   // estimateCPPContribution runs only on the private Render server.
+
+
+
   // estimateEIPremium runs only on the private Render server.
+
+
+
   // calculateIncomeTax runs only on the private Render server.
+
+
+
   // averageTaxRate runs only on the private Render server.
+
+
+
+
   // netAfterTaxIncome runs only on the private Render server.
+
+
+
+
   // grossUpAfterTaxIncome runs only on the private Render server.
 
 
@@ -539,36 +562,120 @@
     const isCouple = selected("householdMode") === "couple";
     document.getElementById("person2Block").classList.toggle("hidden", !isCouple);
   }
+
+
+
   // cppAdjustmentFactor runs only on the private Render server.
+
+
+
   // oasAdjustmentFactor runs only on the private Render server.
+
+
+
   // oasAge75Factor runs only on the private Render server.
+
+
+
   // adjustedCPPAnnual runs only on the private Render server.
+
+
+
   // adjustedOASAnnual runs only on the private Render server.
+
+
+
+
+
   // rrifMinimumFactor runs only on the private Render server.
+
+
+
+
   // readPerson runs only on the private Render server.
+
+
+
   // projectToRetirement runs only on the private Render server.
 
 
 
 
-  function annualToMonthlyRate(annualRate) {
-    return Math.pow(1 + annualRate, 1 / 12) - 1;
-  }
+
+  // annualToMonthlyRate runs only on the private Render server.
+
+
+
+
   // readIncomeRequirementAdjustments runs only on the private Render server.
+
+
+
   // annualIncomeRequirementAdjustment runs only on the private Render server.
+
+
+
+
+
+
   // ageFallsWithinProjectionYear runs only on the private Render server.
+
+
+
+
+
   // lumpSumMonthInProjectionYear runs only on the private Render server.
+
+
+
   // monthIndexWithinProjectionYear runs only on the private Render server.
+
+
+
   // addToAccount runs only on the private Render server.
+
+
+
   // applyScheduledLumpSums runs only on the private Render server.
+
+
+
+
   // readLumpSumRemovals runs only on the private Render server.
+
+
+
   // resetLumpSumAvailableBalances runs only on the private Render server.
+
+
+
   // getAccountBalanceForRemoval runs only on the private Render server.
+
+
+
   // removeFromAccount runs only on the private Render server.
+
+
+
+
+
   // annualContributionAmount runs only on the private Render server.
+
+
+
   // advancePreRetirementOneYear runs only on the private Render server.
+
+
+
   // growRetirementAccountsMonthly runs only on the private Render server.
+
+
+
+
   // projectReplacementHomeValue runs only on the private Render server.
+
+
+
   // applyHomeSaleIfScheduled runs only on the private Render server.
 
 
@@ -583,17 +690,51 @@
     alert(message);
   }
 
+
+
+
   async function calculate() {
     const status = document.getElementById("statusBadge");
-    if (status) { status.className = "status good"; status.textContent = "Calculating securely..."; }
+    if (status) {
+      status.className = "status good";
+      status.textContent = "Calculating securely...";
+    }
+
     try {
-      const response = await fetch(API_BASE_URL + "/api/calculate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(collectPlannerInputs().values) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Calculation failed.");
+      const response = await fetch(API_BASE_URL + "/api/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(collectPlannerInputs().values)
+      });
+
+      let result = {};
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        result = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error || "The private calculation server could not complete the projection.");
+      }
+
       const rows = result.rows || [];
-      updateSummary(rows); drawIncomeChart(rows); drawBalanceChart(rows); updateTable(rows);
+      updateSummary(rows);
+      drawIncomeChart(rows);
+      drawBalanceChart(rows);
+      updateTable(rows);
+
+      if (status) {
+        status.className = "status good";
+        status.textContent = "Projection ready";
+      }
     } catch (error) {
-      if (status) { status.className = "status warn"; status.textContent = error.message || "Calculation failed."; }
+      if (status) {
+        status.className = "status warn";
+        status.textContent = error.message || "Calculation failed.";
+      } else {
+        alert(error.message || "Calculation failed.");
+      }
     }
   }
 
@@ -1255,5 +1396,36 @@
       }
     });
   }
+
+
+  const rotatingAds = [
+    { title: "Advisor spotlight", size: "300 x 250 or sponsored card", note: "Suggested use: retirement advisor, financial planner, or planning review offer." },
+    { title: "Insurance partner", size: "300 x 250 or sponsored card", note: "Suggested use: life insurance, critical illness, or estate planning partner." },
+    { title: "Mortgage / banking partner", size: "300 x 250 or sponsored card", note: "Suggested use: mortgage broker, banking, lending, or debt-management partner." }
+  ];
+
+  let rotatingAdIndex = 0;
+
+  function updateRotatingAd() {
+    const content = document.getElementById("rotatingAdContent");
+    const note = document.getElementById("rotatingAdNote");
+    if (!content || !note) return;
+    const ad = rotatingAds[rotatingAdIndex % rotatingAds.length];
+    content.style.opacity = "0";
+    setTimeout(() => {
+      content.innerHTML = '<span><span class="rotating-ad-title">' + escapeHtml(ad.title) + '</span><span class="rotating-ad-size">' + escapeHtml(ad.size) + '</span></span>';
+      note.textContent = ad.note + " Rotates every 30 seconds.";
+      content.style.opacity = "1";
+      rotatingAdIndex += 1;
+    }, 250);
+  }
+
+  function startRotatingAds() {
+    updateRotatingAd();
+    setInterval(updateRotatingAd, 30000);
+  }
+
+
+  startRotatingAds();
 
   initialize();
