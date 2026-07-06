@@ -1399,7 +1399,7 @@
 
 
   const rotatingAds = [
-    { title: "Advisor spotlight", size: "300 x 250 or sponsored card", note: "Suggested use: retirement advisor, financial planner, or planning review offer." },
+    { image:"images/company1.jpg" },
     { title: "Insurance partner", size: "300 x 250 or sponsored card", note: "Suggested use: life insurance, critical illness, or estate planning partner." },
     { title: "Mortgage / banking partner", size: "300 x 250 or sponsored card", note: "Suggested use: mortgage broker, banking, lending, or debt-management partner." }
   ];
