@@ -494,12 +494,12 @@
 
 
     for (let i = 1; i <= 5; i++) {
-      populateAge("adjustment" + i + "Age", 50, 105, defaults["adjustment" + i + "Age"]);
+      populateAge("adjustment" + i + "Age", 18, 105, defaults["adjustment" + i + "Age"]);
       populateMonth("adjustment" + i + "AgeMonth", defaults["adjustment" + i + "AgeMonth"] || 0);
       populateCurrency("adjustment" + i + "Amount", 0, 20000, 250);
     }
     for (let i = 1; i <= 5; i++) {
-      populateAge("lumpSum" + i + "Age", 50, 105, defaults["lumpSum" + i + "Age"]);
+      populateAge("lumpSum" + i + "Age", 18, 105, defaults["lumpSum" + i + "Age"]);
       populateMonth("lumpSum" + i + "AgeMonth", defaults["lumpSum" + i + "AgeMonth"] || 0);
       populateCurrency("lumpSum" + i + "Amount", 0, 500000, 5000);
     }
