@@ -1399,7 +1399,7 @@
 
 
   const rotatingAds = [
-    { Title: ABC Financial, image:"ad images/300x200.jpg" },
+    { Title: "ABC Financial", image:"ad images/300x200.jpg" },
     { title: "Insurance partner", size: "300 x 250 or sponsored card", note: "Suggested use: life insurance, critical illness, or estate planning partner." },
     { title: "Mortgage / banking partner", size: "300 x 250 or sponsored card", note: "Suggested use: mortgage broker, banking, lending, or debt-management partner." }
   ];
