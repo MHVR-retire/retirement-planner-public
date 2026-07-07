@@ -504,9 +504,9 @@
       populateCurrency("lumpSum" + i + "Amount", 0, 500000, 5000);
     }
 
-    populatePercent("returnRate", 0, 10, 0.5, defaults.returnRate);
-    populatePercent("postRetirementReturnRate", 0, 10, 0.5, defaults.postRetirementReturnRate);
-    populatePercent("inflationRate", 0, 6, 0.5, defaults.inflationRate);
+    populatePercent("returnRate", 0, 10, 0.1, defaults.returnRate);
+    populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
+    populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
 
     setDefaults();
 
