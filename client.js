@@ -1441,17 +1441,17 @@ function setupLegalAgreementModal() {
 
   if (!modal || !button) return;
 
-  const agreed = localStorage.getItem("retirementPlannerLegalAgreed");
+  function setupLegalAgreementModal() {
+    const modal = document.getElementById("legalModal");
+    const button = document.getElementById("agreeLegalBtn");
 
-  if (agreed === "yes") {
-    modal.style.display = "none";
-    return;
-  }
+    if (!modal || !button) return;
 
-  button.addEventListener("click", () => {
-    localStorage.setItem("retirementPlannerLegalAgreed", "yes");
-    modal.style.display = "none";
-  });
+    modal.style.display = "flex";
+
+    button.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
 }
 
 window.addEventListener("load", () => {
