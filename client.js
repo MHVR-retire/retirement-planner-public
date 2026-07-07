@@ -1435,3 +1435,23 @@
   startRotatingAds();
 
   initialize();
+function setupLegalAgreementModal() {
+  const modal = document.getElementById("legalModal");
+  const button = document.getElementById("agreeLegalBtn");
+
+  if (!modal || !button) return;
+
+  const agreed = localStorage.getItem("retirementPlannerLegalAgreed");
+
+  if (agreed === "yes") {
+    modal.style.display = "none";
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    localStorage.setItem("retirementPlannerLegalAgreed", "yes");
+    modal.style.display = "none";
+  });
+}
+
+setupLegalAgreementModal();
