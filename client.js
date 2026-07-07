@@ -1436,17 +1436,12 @@
 
   initialize();
 function setupLegalAgreementModal() {
-  const modal = document.getElementById("legalModal");
-  const button = document.getElementById("agreeLegalBtn");
-
-  if (!modal || !button) return;
-
-  function setupLegalAgreementModal() {
     const modal = document.getElementById("legalModal");
     const button = document.getElementById("agreeLegalBtn");
 
     if (!modal || !button) return;
 
+    // Always show the agreement when the page loads
     modal.style.display = "flex";
 
     button.addEventListener("click", () => {
