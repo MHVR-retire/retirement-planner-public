@@ -1454,4 +1454,6 @@ function setupLegalAgreementModal() {
   });
 }
 
-setupLegalAgreementModal();
+window.addEventListener("load", () => {
+    setupLegalAgreementModal();
+});
