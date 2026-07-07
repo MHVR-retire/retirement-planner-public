@@ -4,7 +4,7 @@
 
   // Paste your private Render server URL here after deployment.
   // Example: const API_BASE_URL = "https://your-render-service-name.onrender.com";
-  // Leave blank only if the front end and server are hosted on the same domain.
+  // Leave blank only if the front end and server are fhosted on the same domain.
   const API_BASE_URL = "https://retirement-planner-tpyr.onrender.com";
 
 
@@ -1399,7 +1399,7 @@
 
 
   const rotatingAds = [
-    { image:"ad images/300x200.jpg" },
+    { Title: ABC Financial, image:"ad images/300x200.jpg" },
     { title: "Insurance partner", size: "300 x 250 or sponsored card", note: "Suggested use: life insurance, critical illness, or estate planning partner." },
     { title: "Mortgage / banking partner", size: "300 x 250 or sponsored card", note: "Suggested use: mortgage broker, banking, lending, or debt-management partner." }
   ];
@@ -1413,7 +1413,24 @@
     const ad = rotatingAds[rotatingAdIndex % rotatingAds.length];
     content.style.opacity = "0";
     setTimeout(() => {
-      content.innerHTML = '<span><span class="rotating-ad-title">' + escapeHtml(ad.title) + '</span><span class="rotating-ad-size">' + escapeHtml(ad.size) + '</span></span>';
+      
+      content.innerHTML = `
+<a href="${ad.link}"
+   target="_blank"
+   rel="noopener noreferrer">
+
+    <img src="${ad.image}"
+         alt="${ad.title}"
+         style="
+            width:100%;
+            display:block;
+            border-radius:12px;
+         ">
+
+</a>
+`;
+      
+      
       note.textContent = ad.note + " Rotates every 30 seconds.";
       content.style.opacity = "1";
       rotatingAdIndex += 1;
