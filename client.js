@@ -1414,21 +1414,10 @@
     content.style.opacity = "0";
     setTimeout(() => {
       
-      content.innerHTML = `
-<a href="${ad.link}"
-   target="_blank"
-   rel="noopener noreferrer">
-
-    <img src="${ad.image}"
-         alt="${ad.title}"
-         style="
-            width:100%;
-            display:block;
-            border-radius:12px;
-         ">
-
-</a>
-`;
+      content.innerHTML = '<span><span class="rotating-ad-title">' + escapeHtml(ad.title) + '</span><span class="rotating-ad-size">' + escapeHtml(ad.size) + '</span></span>';
+      note.textContent = ad.note + " Rotates every 30 seconds.";
+      content.style.opacity = "1";
+      rotatingAdIndex += 1;
       
       
       note.textContent = ad.note + " Rotates every 30 seconds.";
