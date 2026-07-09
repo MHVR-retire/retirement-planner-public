@@ -528,7 +528,7 @@ link.download = safeScenarioName
       }
     }
 
-    document.getElementById("calculateBtn").addEventListener("click", calculate);
+   
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       calculate();
