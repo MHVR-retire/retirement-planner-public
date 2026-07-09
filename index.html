@@ -1035,19 +1035,16 @@
           </details>
 
           <div class="button-row">
-           
-           <button class="secondary" id="resetBtn">Reset defaults</button>
-         </div>
+            <button class="primary" id="calculateBtn">Calculate</button>
+            <button class="secondary" id="resetBtn">Reset defaults</button>
+          </div>
 
           <div class="button-row three">
             <button class="secondary" id="saveInputsBtn" type="button">Save</button>
             <button class="secondary" id="loadInputsBtn" type="button">Load</button>
             <button class="secondary" id="clearSavedInputsBtn" type="button">Clear saved</button>
           </div>
-<div class="field">
-  <label for="scenarioName">Scenario name</label>
-  <input type="text" id="scenarioName" placeholder="e.g. Base case age 63 retirement" />
-</div>
+
           <div class="button-row">
             <button class="secondary" id="exportInputsBtn" type="button">Export JSON</button>
             <button class="secondary" id="importInputsBtn" type="button">Import JSON</button>
@@ -1065,8 +1062,8 @@
       <section class="results-panel">
         <div class="panel">
           <div class="panel-header">
-            <h2>Retirement Projection</h2>
-            <p>Income is projected from the first retirement period through the last life expectancy. Desired Income is adjusted by inflation between current age and first period of retirement. The red dashed-line shows the exact desired income after adjustments, the dashed black dashed-line shows the baseline desired income before adjustments. Hovering over chart shows bar chart values.</p>
+            <h2>Retirement projection</h2>
+            <p>Income is projected from the first retirement period through the last life expectancy, with age timing tracked internally in whole months so 0 months is a valid exact-birthday choice. Stacked bars start at the first retirement year. The red line shows the exact desired income after adjustments, while the dashed black line shows the baseline desired income before adjustments. Hovering over the chart shows total income, target income, surplus or shortfall, and tax context.</p>
           </div>
 
           <div class="panel-body">

@@ -428,16 +428,7 @@
     const date = new Date().toISOString().slice(0, 10);
 
     link.href = url;
-const scenarioName = document.getElementById("scenarioName")?.value || "";
-const safeScenarioName = scenarioName
-  .trim()
-  .replace(/[^a-z0-9-_ ]/gi, "")
-  .replace(/\s+/g, "-")
-  .toLowerCase();
-
-link.download = safeScenarioName
-  ? safeScenarioName + "-" + date + ".json"
-  : "retirement-planner-scenario-" + date + ".json";
+    link.download = "retirement-planner-scenario-" + date + ".json";
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -528,7 +519,7 @@ link.download = safeScenarioName
       }
     }
 
-   
+    document.getElementById("calculateBtn").addEventListener("click", calculate);
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       calculate();
