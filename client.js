@@ -842,13 +842,7 @@ link.download = safeScenarioName
 
     updateScenarioSummary(first);
 
-    const hasShortfall = rows.some(row => row.shortfall > 0);
     const status = document.getElementById("statusBadge");
-
-    status.className = "status " + (hasShortfall ? "warn" : "good");
-    status.textContent = hasShortfall
-      ? "Projected shortfall appears in retirement"
-      : "Projected income target is covered";
 
     document.getElementById("metricRRSP").textContent = formatMoney(personInvestmentAtRetirement(rows, "p1"));
     document.getElementById("metricTFSA").textContent = selected("householdMode") === "couple"
@@ -913,6 +907,19 @@ link.download = safeScenarioName
         : 0;
 
       goalValue.textContent = fundingRatioPercent.toFixed(0) + "%";
+
+      if (status) {
+        if (fundingRatioPercent >= 110) {
+          status.className = "status good";
+          status.textContent = "Funding ratio is acceptable";
+        } else if (fundingRatioPercent >= 100) {
+          status.className = "status warn";
+          status.textContent = "Caution - Funding ratio low";
+        } else {
+          status.className = "status danger";
+          status.textContent = "Insufficient funding";
+        }
+      }
 
       const noteText =
         "Funding Ratio: " + fundingRatioPercent.toFixed(0) + "%" +
