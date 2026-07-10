@@ -121,6 +121,8 @@
       min-height: 0;
       overflow-y: auto;
       overscroll-behavior: contain;
+      padding: 22px;
+      padding-right: 14px;
     }
 
     .results-panel .panel-body {
@@ -132,12 +134,14 @@
     }
 
     .input-panel .panel-body::-webkit-scrollbar,
-    .results-panel .panel-body::-webkit-scrollbar {
+    .results-panel .panel-body::-webkit-scrollbar,
+    .results-scroll-body::-webkit-scrollbar {
       width: 10px;
     }
 
     .input-panel .panel-body::-webkit-scrollbar-thumb,
-    .results-panel .panel-body::-webkit-scrollbar-thumb {
+    .results-panel .panel-body::-webkit-scrollbar-thumb,
+    .results-scroll-body::-webkit-scrollbar-thumb {
       background: #cbd5e1;
       border-radius: 999px;
       border: 2px solid #f8fafc;
