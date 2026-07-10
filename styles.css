@@ -116,6 +116,13 @@
       overflow: hidden;
     }
 
+    .results-scroll-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
     .results-panel .panel-body {
       flex: 1 1 auto;
       min-height: 0;
@@ -324,13 +331,11 @@
     .secondary { background: #eaf0f8; color: #233044; }
 
     .summary-sticky {
-      position: sticky;
-      top: 0;
+      flex: 0 0 auto;
       z-index: 20;
       background: var(--card);
-      padding: 8px 0 10px;
+      padding: 8px 18px 10px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 10px;
     }
 
     .summary-grid {
