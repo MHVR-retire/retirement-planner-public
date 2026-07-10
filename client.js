@@ -733,10 +733,6 @@ link.download = safeScenarioName
       drawBalanceChart(rows);
       updateTable(rows);
 
-      if (status) {
-        status.className = "status good";
-        status.textContent = "Projection ready";
-      }
     } catch (error) {
       if (status) {
         status.className = "status warn";
