@@ -997,3 +997,12 @@
 #calculateBtn {
     display: none !important;
 }
+
+
+/* Economic events */
+.economic-event-card {
+  border-left: 4px solid #2563eb;
+}
+.economic-event-card h3 {
+  color: #1e3a8a;
+}
