@@ -498,6 +498,81 @@ link.download = safeScenarioName
     });
   }
 
+
+
+  function getActiveEconomicEvents() {
+    const events = [];
+    for (let i = 1; i <= 5; i++) {
+      const person = selected("economicEvent" + i + "Person");
+      const duration = value("economicEvent" + i + "DurationMonths");
+      if (person === "none" || duration <= 0) continue;
+
+      const description = document.getElementById("economicEvent" + i + "Description")?.value.trim();
+      const startAge = value("economicEvent" + i + "StartAge");
+      const startMonth = value("economicEvent" + i + "StartAgeMonth");
+      const marketReturn = value("economicEvent" + i + "ReturnRate");
+      const inflation = value("economicEvent" + i + "InflationRate");
+
+      events.push(
+        (description || "Economic event " + i) +
+        ": age " + startAge + "y " + startMonth + "m, " +
+        duration + " months, return " + marketReturn.toFixed(1) + "%, inflation " + inflation.toFixed(1) + "%"
+      );
+    }
+    return events;
+  }
+
+  function getActiveLumpSums() {
+    const lumpSums = [];
+    for (let i = 1; i <= 5; i++) {
+      const person = selected("lumpSum" + i + "Person");
+      const amount = value("lumpSum" + i + "Amount");
+      if (person === "none" || amount <= 0) continue;
+
+      const description = document.getElementById("lumpSum" + i + "Description")?.value.trim();
+      const type = selected("lumpSum" + i + "Type") === "add" ? "Addition" : "Removal";
+      const age = value("lumpSum" + i + "Age");
+      const month = value("lumpSum" + i + "AgeMonth");
+
+      lumpSums.push(
+        (description || type + " " + i) +
+        ": " + type.toLowerCase() + " " + formatMoney(amount) +
+        " at age " + age + "y " + month + "m"
+      );
+    }
+    return lumpSums;
+  }
+
+  function updateActiveInputNotices() {
+    const events = getActiveEconomicEvents();
+    const lumpSums = getActiveLumpSums();
+
+    const eventBadge = document.getElementById("economicEventCountBadge");
+    const eventCount = document.getElementById("economicEventCount");
+    const lumpBadge = document.getElementById("lumpSumCountBadge");
+    const lumpCount = document.getElementById("lumpSumCount");
+
+    if (eventCount) eventCount.textContent = String(events.length);
+    if (lumpCount) lumpCount.textContent = String(lumpSums.length);
+
+    if (eventBadge) {
+      eventBadge.classList.toggle("is-empty", events.length === 0);
+      eventBadge.title = events.length ? events.join("\n") : "No economic events selected. Click to review the Economic Events section.";
+    }
+
+    if (lumpBadge) {
+      lumpBadge.classList.toggle("is-empty", lumpSums.length === 0);
+      lumpBadge.title = lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.";
+    }
+  }
+
+  function openInputSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.open = true;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function initialize() {
     ["p1CurrentAge", "p2CurrentAge"].forEach(id => populateAge(id, 18, 75, defaults[id]));
     ["p1RetirementAge", "p2RetirementAge"].forEach(id => populateAge(id, 50, 75, defaults[id]));
@@ -582,6 +657,14 @@ link.download = safeScenarioName
     document.getElementById("clearSavedInputsBtn").addEventListener("click", clearSavedInputs);
     document.getElementById("exportInputsBtn").addEventListener("click", exportInputs);
 
+    document.getElementById("economicEventCountBadge")?.addEventListener("click", () => {
+      openInputSection("economicEventsSection");
+    });
+
+    document.getElementById("lumpSumCountBadge")?.addEventListener("click", () => {
+      openInputSection("lumpSumSection");
+    });
+
     document.getElementById("importInputsBtn").addEventListener("click", () => {
       document.getElementById("importFileInput").click();
     });
@@ -596,6 +679,7 @@ link.download = safeScenarioName
         if (el.id === "householdMode") togglePerson2();
         if (el.id === "desiredIncomeFrequency") updateDesiredIncomeOptions();
         if (el.id === "sellHomeOption" || el.id === "homeSaleType") toggleHomeSaleFields();
+        updateActiveInputNotices();
         calculate();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
       });
@@ -603,10 +687,12 @@ link.download = safeScenarioName
 
     document.querySelectorAll("input[type='text']").forEach(el => {
       el.addEventListener("input", () => {
+        updateActiveInputNotices();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
       });
     });
 
+    updateActiveInputNotices();
     calculate();
   }
 
@@ -891,6 +977,7 @@ link.download = safeScenarioName
 
 
   function updateSummary(rows, p1, p2, realReturn, postRetirementRealReturn, monthlyPostRetirementRealReturn) {
+    updateActiveInputNotices();
     const first = rows.find(row => row.isRetirementProjectionYear) || rows[0];
     const last = rows[rows.length - 1];
     const divisor = getDisplayDivisor();

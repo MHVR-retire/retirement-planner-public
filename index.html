@@ -658,7 +658,7 @@
           </details>
 
 
-          <details class="input-section">
+          <details class="input-section" id="lumpSumSection">
             <summary>Lump sum additions / removals</summary>
             <div class="section-content">
 
@@ -987,7 +987,7 @@
           </details>
 
 
-          <details class="input-section">
+          <details class="input-section" id="economicEventsSection">
             <summary>Economic events</summary>
             <div class="section-content">
               <p class="disclaimer">
@@ -1276,7 +1276,19 @@
           </div>
 
                       <div class="summary-sticky">
-              <div id="statusBadge" class="status warn">Calculating funding ratio...</div>
+              <div class="summary-notice-row">
+                <div id="statusBadge" class="status warn">Calculating funding ratio...</div>
+                <div class="summary-input-notices" aria-label="Active scenario inputs">
+                  <button type="button" class="summary-notice economic" id="economicEventCountBadge" title="No economic events selected">
+                    <span class="summary-notice-label">Economic events</span>
+                    <span class="summary-notice-count" id="economicEventCount">0</span>
+                  </button>
+                  <button type="button" class="summary-notice lump" id="lumpSumCountBadge" title="No lump sums entered">
+                    <span class="summary-notice-label">Lump sums</span>
+                    <span class="summary-notice-count" id="lumpSumCount">0</span>
+                  </button>
+                </div>
+              </div>
 
               <div class="summary-grid">
               <div class="metric">
