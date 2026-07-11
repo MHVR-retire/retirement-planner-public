@@ -71,6 +71,12 @@
     returnRate: 5,
     postRetirementReturnRate: 4,
     inflationRate: 2,
+    economicEvent1Person: "none", economicEvent1StartAge: 65, economicEvent1StartAgeMonth: 0, economicEvent1DurationMonths: 12, economicEvent1ReturnRate: -10, economicEvent1InflationRate: 4, economicEvent1Description: "",
+    economicEvent2Person: "none", economicEvent2StartAge: 65, economicEvent2StartAgeMonth: 0, economicEvent2DurationMonths: 12, economicEvent2ReturnRate: 8, economicEvent2InflationRate: 2, economicEvent2Description: "",
+    economicEvent3Person: "none", economicEvent3StartAge: 65, economicEvent3StartAgeMonth: 0, economicEvent3DurationMonths: 12, economicEvent3ReturnRate: 5, economicEvent3InflationRate: 2, economicEvent3Description: "",
+    economicEvent4Person: "none", economicEvent4StartAge: 65, economicEvent4StartAgeMonth: 0, economicEvent4DurationMonths: 12, economicEvent4ReturnRate: 5, economicEvent4InflationRate: 2, economicEvent4Description: "",
+    economicEvent5Person: "none", economicEvent5StartAge: 65, economicEvent5StartAgeMonth: 0, economicEvent5DurationMonths: 12, economicEvent5ReturnRate: 5, economicEvent5InflationRate: 2, economicEvent5Description: "",
+
     adjustment1Description: "",
     adjustment2Description: "",
     adjustment3Description: "",
@@ -463,6 +469,110 @@ link.download = safeScenarioName
   }
 
 
+
+  function populateSignedPercent(id, min, max, step, selectedValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = "";
+    for (let amount = min; amount <= max + 0.0001; amount += step) {
+      const rounded = Math.round(amount * 10) / 10;
+      const option = document.createElement("option");
+      option.value = rounded;
+      option.textContent = rounded.toFixed(1) + "%";
+      if (Math.abs(rounded - Number(selectedValue)) < 0.001) option.selected = true;
+      el.appendChild(option);
+    }
+  }
+
+  function populateDurationMonths(id, selectedValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = "";
+    const choices = [1, 3, 6, 12, 18, 24, 36, 48, 60, 84, 120];
+    choices.forEach(months => {
+      const option = document.createElement("option");
+      option.value = months;
+      option.textContent = months < 12 ? months + (months === 1 ? " month" : " months") : (months / 12) + ((months / 12) === 1 ? " year" : " years");
+      if (months === Number(selectedValue)) option.selected = true;
+      el.appendChild(option);
+    });
+  }
+
+
+
+  function getActiveEconomicEvents() {
+    const events = [];
+    for (let i = 1; i <= 5; i++) {
+      const person = selected("economicEvent" + i + "Person");
+      const duration = value("economicEvent" + i + "DurationMonths");
+      if (person === "none" || duration <= 0) continue;
+
+      const description = document.getElementById("economicEvent" + i + "Description")?.value.trim();
+      const startAge = value("economicEvent" + i + "StartAge");
+      const startMonth = value("economicEvent" + i + "StartAgeMonth");
+      const marketReturn = value("economicEvent" + i + "ReturnRate");
+      const inflation = value("economicEvent" + i + "InflationRate");
+
+      events.push(
+        (description || "Economic event " + i) +
+        ": age " + startAge + "y " + startMonth + "m, " +
+        duration + " months, return " + marketReturn.toFixed(1) + "%, inflation " + inflation.toFixed(1) + "%"
+      );
+    }
+    return events;
+  }
+
+  function getActiveLumpSums() {
+    const lumpSums = [];
+    for (let i = 1; i <= 5; i++) {
+      const person = selected("lumpSum" + i + "Person");
+      const amount = value("lumpSum" + i + "Amount");
+      if (person === "none" || amount <= 0) continue;
+
+      const description = document.getElementById("lumpSum" + i + "Description")?.value.trim();
+      const type = selected("lumpSum" + i + "Type") === "add" ? "Addition" : "Removal";
+      const age = value("lumpSum" + i + "Age");
+      const month = value("lumpSum" + i + "AgeMonth");
+
+      lumpSums.push(
+        (description || type + " " + i) +
+        ": " + type.toLowerCase() + " " + formatMoney(amount) +
+        " at age " + age + "y " + month + "m"
+      );
+    }
+    return lumpSums;
+  }
+
+  function updateActiveInputNotices() {
+    const events = getActiveEconomicEvents();
+    const lumpSums = getActiveLumpSums();
+
+    const eventBadge = document.getElementById("economicEventCountBadge");
+    const eventCount = document.getElementById("economicEventCount");
+    const lumpBadge = document.getElementById("lumpSumCountBadge");
+    const lumpCount = document.getElementById("lumpSumCount");
+
+    if (eventCount) eventCount.textContent = String(events.length);
+    if (lumpCount) lumpCount.textContent = String(lumpSums.length);
+
+    if (eventBadge) {
+      eventBadge.classList.toggle("is-empty", events.length === 0);
+      eventBadge.title = events.length ? events.join("\n") : "No economic events selected. Click to review the Economic Events section.";
+    }
+
+    if (lumpBadge) {
+      lumpBadge.classList.toggle("is-empty", lumpSums.length === 0);
+      lumpBadge.title = lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.";
+    }
+  }
+
+  function openInputSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    if (!section) return;
+    section.open = true;
+    section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   function initialize() {
     ["p1CurrentAge", "p2CurrentAge"].forEach(id => populateAge(id, 18, 75, defaults[id]));
     ["p1RetirementAge", "p2RetirementAge"].forEach(id => populateAge(id, 50, 75, defaults[id]));
@@ -513,6 +623,14 @@ link.download = safeScenarioName
       populateCurrency("lumpSum" + i + "Amount", 0, 500000, 5000);
     }
 
+    for (let i = 1; i <= 5; i++) {
+      populateAge("economicEvent" + i + "StartAge", 18, 105, defaults["economicEvent" + i + "StartAge"]);
+      populateMonth("economicEvent" + i + "StartAgeMonth", defaults["economicEvent" + i + "StartAgeMonth"] || 0);
+      populateDurationMonths("economicEvent" + i + "DurationMonths", defaults["economicEvent" + i + "DurationMonths"] || 12);
+      populateSignedPercent("economicEvent" + i + "ReturnRate", -30, 30, 0.5, defaults["economicEvent" + i + "ReturnRate"]);
+      populatePercent("economicEvent" + i + "InflationRate", 0, 15, 0.5, defaults["economicEvent" + i + "InflationRate"]);
+    }
+
     populatePercent("returnRate", 0, 10, 0.1, defaults.returnRate);
     populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
     populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
@@ -539,6 +657,14 @@ link.download = safeScenarioName
     document.getElementById("clearSavedInputsBtn").addEventListener("click", clearSavedInputs);
     document.getElementById("exportInputsBtn").addEventListener("click", exportInputs);
 
+    document.getElementById("economicEventCountBadge")?.addEventListener("click", () => {
+      openInputSection("economicEventsSection");
+    });
+
+    document.getElementById("lumpSumCountBadge")?.addEventListener("click", () => {
+      openInputSection("lumpSumSection");
+    });
+
     document.getElementById("importInputsBtn").addEventListener("click", () => {
       document.getElementById("importFileInput").click();
     });
@@ -553,6 +679,7 @@ link.download = safeScenarioName
         if (el.id === "householdMode") togglePerson2();
         if (el.id === "desiredIncomeFrequency") updateDesiredIncomeOptions();
         if (el.id === "sellHomeOption" || el.id === "homeSaleType") toggleHomeSaleFields();
+        updateActiveInputNotices();
         calculate();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
       });
@@ -560,10 +687,12 @@ link.download = safeScenarioName
 
     document.querySelectorAll("input[type='text']").forEach(el => {
       el.addEventListener("input", () => {
+        updateActiveInputNotices();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
       });
     });
 
+    updateActiveInputNotices();
     calculate();
   }
 
@@ -702,7 +831,17 @@ link.download = safeScenarioName
 
 
 
+  let calculationRequestSequence = 0;
+  let activeCalculationController = null;
+
   async function calculate() {
+    const requestSequence = ++calculationRequestSequence;
+
+    if (activeCalculationController) {
+      activeCalculationController.abort();
+    }
+    activeCalculationController = new AbortController();
+
     const status = document.getElementById("statusBadge");
     if (status) {
       status.className = "status good";
@@ -713,7 +852,8 @@ link.download = safeScenarioName
       const response = await fetch(API_BASE_URL + "/api/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(collectPlannerInputs().values)
+        body: JSON.stringify(collectPlannerInputs().values),
+        signal: activeCalculationController.signal
       });
 
       let result = {};
@@ -727,6 +867,9 @@ link.download = safeScenarioName
         throw new Error(result.error || "The private calculation server could not complete the projection.");
       }
 
+      // Ignore an older response if the user changed another input while it was calculating.
+      if (requestSequence !== calculationRequestSequence) return;
+
       const rows = result.rows || [];
       updateSummary(rows);
       drawIncomeChart(rows);
@@ -734,6 +877,9 @@ link.download = safeScenarioName
       updateTable(rows);
 
     } catch (error) {
+      if (error && error.name === "AbortError") return;
+      if (requestSequence !== calculationRequestSequence) return;
+
       if (status) {
         status.className = "status warn";
         status.textContent = error.message || "Calculation failed.";
@@ -742,7 +888,6 @@ link.download = safeScenarioName
       }
     }
   }
-
 
 
 
@@ -832,6 +977,7 @@ link.download = safeScenarioName
 
 
   function updateSummary(rows, p1, p2, realReturn, postRetirementRealReturn, monthlyPostRetirementRealReturn) {
+    updateActiveInputNotices();
     const first = rows.find(row => row.isRetirementProjectionYear) || rows[0];
     const last = rows[rows.length - 1];
     const divisor = getDisplayDivisor();

@@ -997,3 +997,103 @@
 #calculateBtn {
     display: none !important;
 }
+
+
+/* Economic events */
+.economic-event-card {
+  border-left: 4px solid #2563eb;
+}
+.economic-event-card h3 {
+  color: #1e3a8a;
+}
+
+
+    .summary-notice-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      min-width: 0;
+    }
+
+    .summary-notice-row .status {
+      margin-bottom: 0;
+      flex: 0 1 auto;
+    }
+
+    .summary-input-notices {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .summary-notice {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 28px;
+      padding: 4px 6px 4px 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .summary-notice:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10);
+    }
+
+    .summary-notice.economic {
+      color: #9a3412;
+      background: #fff7ed;
+      border-color: #fed7aa;
+    }
+
+    .summary-notice.lump {
+      color: #1d4ed8;
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+
+    .summary-notice.is-empty {
+      color: #64748b;
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    .summary-notice-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 999px;
+      color: #fff;
+      background: #475569;
+      font-size: 10px;
+      font-weight: 900;
+    }
+
+    .summary-notice-count {
+      font-size: 10px;
+    }
+
+    @media (max-width: 760px) {
+      .summary-notice-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .summary-input-notices {
+        justify-content: flex-start;
+      }
+    }
