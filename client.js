@@ -71,6 +71,12 @@
     returnRate: 5,
     postRetirementReturnRate: 4,
     inflationRate: 2,
+    economicEvent1Person: "none", economicEvent1StartAge: 65, economicEvent1StartAgeMonth: 0, economicEvent1DurationMonths: 12, economicEvent1ReturnRate: -10, economicEvent1InflationRate: 4, economicEvent1Description: "",
+    economicEvent2Person: "none", economicEvent2StartAge: 65, economicEvent2StartAgeMonth: 0, economicEvent2DurationMonths: 12, economicEvent2ReturnRate: 8, economicEvent2InflationRate: 2, economicEvent2Description: "",
+    economicEvent3Person: "none", economicEvent3StartAge: 65, economicEvent3StartAgeMonth: 0, economicEvent3DurationMonths: 12, economicEvent3ReturnRate: 5, economicEvent3InflationRate: 2, economicEvent3Description: "",
+    economicEvent4Person: "none", economicEvent4StartAge: 65, economicEvent4StartAgeMonth: 0, economicEvent4DurationMonths: 12, economicEvent4ReturnRate: 5, economicEvent4InflationRate: 2, economicEvent4Description: "",
+    economicEvent5Person: "none", economicEvent5StartAge: 65, economicEvent5StartAgeMonth: 0, economicEvent5DurationMonths: 12, economicEvent5ReturnRate: 5, economicEvent5InflationRate: 2, economicEvent5Description: "",
+
     adjustment1Description: "",
     adjustment2Description: "",
     adjustment3Description: "",
@@ -463,6 +469,35 @@ link.download = safeScenarioName
   }
 
 
+
+  function populateSignedPercent(id, min, max, step, selectedValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = "";
+    for (let amount = min; amount <= max + 0.0001; amount += step) {
+      const rounded = Math.round(amount * 10) / 10;
+      const option = document.createElement("option");
+      option.value = rounded;
+      option.textContent = rounded.toFixed(1) + "%";
+      if (Math.abs(rounded - Number(selectedValue)) < 0.001) option.selected = true;
+      el.appendChild(option);
+    }
+  }
+
+  function populateDurationMonths(id, selectedValue) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = "";
+    const choices = [1, 3, 6, 12, 18, 24, 36, 48, 60, 84, 120];
+    choices.forEach(months => {
+      const option = document.createElement("option");
+      option.value = months;
+      option.textContent = months < 12 ? months + (months === 1 ? " month" : " months") : (months / 12) + ((months / 12) === 1 ? " year" : " years");
+      if (months === Number(selectedValue)) option.selected = true;
+      el.appendChild(option);
+    });
+  }
+
   function initialize() {
     ["p1CurrentAge", "p2CurrentAge"].forEach(id => populateAge(id, 18, 75, defaults[id]));
     ["p1RetirementAge", "p2RetirementAge"].forEach(id => populateAge(id, 50, 75, defaults[id]));
@@ -511,6 +546,14 @@ link.download = safeScenarioName
       populateAge("lumpSum" + i + "Age", 18, 105, defaults["lumpSum" + i + "Age"]);
       populateMonth("lumpSum" + i + "AgeMonth", defaults["lumpSum" + i + "AgeMonth"] || 0);
       populateCurrency("lumpSum" + i + "Amount", 0, 500000, 5000);
+    }
+
+    for (let i = 1; i <= 5; i++) {
+      populateAge("economicEvent" + i + "StartAge", 18, 105, defaults["economicEvent" + i + "StartAge"]);
+      populateMonth("economicEvent" + i + "StartAgeMonth", defaults["economicEvent" + i + "StartAgeMonth"] || 0);
+      populateDurationMonths("economicEvent" + i + "DurationMonths", defaults["economicEvent" + i + "DurationMonths"] || 12);
+      populateSignedPercent("economicEvent" + i + "ReturnRate", -30, 30, 0.5, defaults["economicEvent" + i + "ReturnRate"]);
+      populatePercent("economicEvent" + i + "InflationRate", 0, 15, 0.5, defaults["economicEvent" + i + "InflationRate"]);
     }
 
     populatePercent("returnRate", 0, 10, 0.1, defaults.returnRate);
@@ -702,7 +745,17 @@ link.download = safeScenarioName
 
 
 
+  let calculationRequestSequence = 0;
+  let activeCalculationController = null;
+
   async function calculate() {
+    const requestSequence = ++calculationRequestSequence;
+
+    if (activeCalculationController) {
+      activeCalculationController.abort();
+    }
+    activeCalculationController = new AbortController();
+
     const status = document.getElementById("statusBadge");
     if (status) {
       status.className = "status good";
@@ -713,7 +766,8 @@ link.download = safeScenarioName
       const response = await fetch(API_BASE_URL + "/api/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(collectPlannerInputs().values)
+        body: JSON.stringify(collectPlannerInputs().values),
+        signal: activeCalculationController.signal
       });
 
       let result = {};
@@ -727,6 +781,9 @@ link.download = safeScenarioName
         throw new Error(result.error || "The private calculation server could not complete the projection.");
       }
 
+      // Ignore an older response if the user changed another input while it was calculating.
+      if (requestSequence !== calculationRequestSequence) return;
+
       const rows = result.rows || [];
       updateSummary(rows);
       drawIncomeChart(rows);
@@ -734,6 +791,9 @@ link.download = safeScenarioName
       updateTable(rows);
 
     } catch (error) {
+      if (error && error.name === "AbortError") return;
+      if (requestSequence !== calculationRequestSequence) return;
+
       if (status) {
         status.className = "status warn";
         status.textContent = error.message || "Calculation failed.";
@@ -742,7 +802,6 @@ link.download = safeScenarioName
       }
     }
   }
-
 
 
 
