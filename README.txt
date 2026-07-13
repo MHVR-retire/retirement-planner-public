@@ -28,3 +28,6 @@ Economic events update
 Economic events stability fix:
 - Restores the normal pre- and post-retirement return assumptions when no event is active.
 - Prevents older API responses from overwriting newer calculations after an event is removed or changed.
+
+
+Update: Lump sum available balances are returned by the private server. Removals above the available account balance are rejected with an inline warning.

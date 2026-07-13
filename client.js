@@ -831,6 +831,37 @@ link.download = safeScenarioName
 
 
 
+
+  function clearLumpSumValidationMessages() {
+    for (let i = 1; i <= 5; i++) {
+      const existing = document.getElementById("lumpSum" + i + "ValidationError");
+      if (existing) existing.remove();
+    }
+  }
+
+  function updateLumpSumAvailableBalances(result) {
+    const balances = result && result.lumpSumAvailableBalances ? result.lumpSumAvailableBalances : {};
+    for (let i = 1; i <= 5; i++) {
+      const id = "lumpSum" + i + "AvailableBalance";
+      const element = document.getElementById(id);
+      if (element) element.textContent = formatMoney(Number(balances[id] || 0));
+    }
+  }
+
+  function showLumpSumValidationMessages(errors) {
+    clearLumpSumValidationMessages();
+    (errors || []).forEach(error => {
+      const balance = document.getElementById("lumpSum" + error.id + "AvailableBalance");
+      if (!balance || !balance.parentElement) return;
+
+      const message = document.createElement("div");
+      message.id = "lumpSum" + error.id + "ValidationError";
+      message.className = "lump-sum-validation-error";
+      message.textContent = error.message;
+      balance.parentElement.appendChild(message);
+    });
+  }
+
   let calculationRequestSequence = 0;
   let activeCalculationController = null;
 
@@ -869,6 +900,17 @@ link.download = safeScenarioName
 
       // Ignore an older response if the user changed another input while it was calculating.
       if (requestSequence !== calculationRequestSequence) return;
+
+      updateLumpSumAvailableBalances(result);
+      showLumpSumValidationMessages(result.lumpSumValidationErrors);
+
+      if (result.lumpSumValidationErrors && result.lumpSumValidationErrors.length) {
+        if (status) {
+          status.className = "status warn";
+          status.textContent = result.lumpSumValidationErrors[0].message;
+        }
+        return;
+      }
 
       const rows = result.rows || [];
       updateSummary(rows);
