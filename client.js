@@ -9,6 +9,9 @@
 
 
   const defaults = {
+    useIncomeAdjustments: "use",
+    useLumpSums: "use",
+    useEconomicEvents: "use",
     householdMode: "couple",
     p1RetirementAge: 65,    p1CurrentAge: 35,    p1LifeExpectancy: 90,
     p1CurrentAgeMonth: 0,
@@ -358,6 +361,24 @@
 
   const STORAGE_KEY = "canadianRetirementPlannerInputsV1";
 
+
+  function updateAdjustmentToggleStates() {
+    const mappings = [
+      { control: "useIncomeAdjustments", section: "incomeAdjustmentsSection" },
+      { control: "useLumpSums", section: "lumpSumSection" },
+      { control: "useEconomicEvents", section: "economicEventsSection" }
+    ];
+
+    mappings.forEach(({ control, section }) => {
+      const select = document.getElementById(control);
+      const target = document.getElementById(section);
+      if (!select || !target) return;
+      const ignored = select.value === "ignore";
+      target.classList.toggle("adjustment-section-ignored", ignored);
+      target.setAttribute("data-adjustment-state", ignored ? "Ignored" : "Used");
+    });
+  }
+
   function collectPlannerInputs() {
     const data = {
       version: 1,
@@ -388,6 +409,8 @@
     });
 
     togglePerson2();
+    updateAdjustmentToggleStates();
+    updateActiveInputNotices();
     calculate();
 
     if (showAlert) {
@@ -552,17 +575,20 @@ link.download = safeScenarioName
     const lumpBadge = document.getElementById("lumpSumCountBadge");
     const lumpCount = document.getElementById("lumpSumCount");
 
-    if (eventCount) eventCount.textContent = String(events.length);
-    if (lumpCount) lumpCount.textContent = String(lumpSums.length);
+    const eventsIgnored = selected("useEconomicEvents") === "ignore";
+    const lumpSumsIgnored = selected("useLumpSums") === "ignore";
+
+    if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
+    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignored" : String(lumpSums.length);
 
     if (eventBadge) {
-      eventBadge.classList.toggle("is-empty", events.length === 0);
-      eventBadge.title = events.length ? events.join("\n") : "No economic events selected. Click to review the Economic Events section.";
+      eventBadge.classList.toggle("is-empty", events.length === 0 || eventsIgnored);
+      eventBadge.title = eventsIgnored ? "Economic events are currently ignored. Click to review the Economic Events section." : (events.length ? events.join("\n") : "No economic events selected. Click to review the Economic Events section.");
     }
 
     if (lumpBadge) {
-      lumpBadge.classList.toggle("is-empty", lumpSums.length === 0);
-      lumpBadge.title = lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.";
+      lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
+      lumpBadge.title = lumpSumsIgnored ? "Lump sums are currently ignored. Click to review the Lump Sum section." : (lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.");
     }
   }
 
@@ -679,6 +705,7 @@ link.download = safeScenarioName
         if (el.id === "householdMode") togglePerson2();
         if (el.id === "desiredIncomeFrequency") updateDesiredIncomeOptions();
         if (el.id === "sellHomeOption" || el.id === "homeSaleType") toggleHomeSaleFields();
+        updateAdjustmentToggleStates();
         updateActiveInputNotices();
         calculate();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
@@ -692,6 +719,7 @@ link.download = safeScenarioName
       });
     });
 
+    updateAdjustmentToggleStates();
     updateActiveInputNotices();
     calculate();
   }

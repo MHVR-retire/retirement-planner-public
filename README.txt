@@ -31,3 +31,6 @@ Economic events stability fix:
 
 
 Update: Lump sum available balances are returned by the private server. Removals above the available account balance are rejected with an inline warning.
+
+
+Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.

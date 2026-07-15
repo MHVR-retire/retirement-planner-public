@@ -42,6 +42,36 @@
         </div>
 
         <div class="panel-body">
+
+          <div class="scenario-control-panel" aria-label="Scenario adjustment controls">
+            <div class="scenario-control-heading">
+              <strong>Scenario adjustment controls</strong>
+              <span>Temporarily ignore entered adjustments without deleting them.</span>
+            </div>
+            <div class="scenario-control-grid">
+              <div class="scenario-control-item">
+                <label for="useIncomeAdjustments">Income adjustments</label>
+                <select id="useIncomeAdjustments">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+              <div class="scenario-control-item">
+                <label for="useLumpSums">Lump sums</label>
+                <select id="useLumpSums">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+              <div class="scenario-control-item">
+                <label for="useEconomicEvents">Economic events</label>
+                <select id="useEconomicEvents">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <details class="input-section" open>
             <summary>Household setup</summary>
             <div class="section-content">
@@ -415,7 +445,7 @@
             </div>
           </details>
 
-          <details class="input-section">
+          <details class="input-section" id="incomeAdjustmentsSection">
             <summary>Income requirement adjustments</summary>
             <div class="section-content">
 
