@@ -929,15 +929,23 @@ link.download = safeScenarioName
       // Ignore an older response if the user changed another input while it was calculating.
       if (requestSequence !== calculationRequestSequence) return;
 
-      updateLumpSumAvailableBalances(result);
-      showLumpSumValidationMessages(result.lumpSumValidationErrors);
+      const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
-      if (result.lumpSumValidationErrors && result.lumpSumValidationErrors.length) {
-        if (status) {
-          status.className = "status warn";
-          status.textContent = result.lumpSumValidationErrors[0].message;
+      if (lumpSumsIgnored) {
+        // Keep the last projected available balances visible while the category is ignored.
+        // Ignoring lump sums must also suppress removal validation warnings.
+        clearLumpSumValidationMessages();
+      } else {
+        updateLumpSumAvailableBalances(result);
+        showLumpSumValidationMessages(result.lumpSumValidationErrors);
+
+        if (result.lumpSumValidationErrors && result.lumpSumValidationErrors.length) {
+          if (status) {
+            status.className = "status warn";
+            status.textContent = result.lumpSumValidationErrors[0].message;
+          }
+          return;
         }
-        return;
       }
 
       const rows = result.rows || [];
