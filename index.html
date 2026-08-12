@@ -42,6 +42,36 @@
         </div>
 
         <div class="panel-body">
+
+          <div class="scenario-control-panel" aria-label="Scenario adjustment controls">
+            <div class="scenario-control-heading">
+              <strong>Scenario adjustment controls</strong>
+              <span>Temporarily ignore entered adjustments without deleting them.</span>
+            </div>
+            <div class="scenario-control-grid">
+              <div class="scenario-control-item">
+                <label for="useIncomeAdjustments">Income adjustments</label>
+                <select id="useIncomeAdjustments">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+              <div class="scenario-control-item">
+                <label for="useLumpSums">Lump Sum Adjustment</label>
+                <select id="useLumpSums">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+              <div class="scenario-control-item">
+                <label for="useEconomicEvents">Economic events</label>
+                <select id="useEconomicEvents">
+                  <option value="use">Use</option>
+                  <option value="ignore">Ignore</option>
+                </select>
+              </div>
+            </div>
+          </div>
           <details class="input-section" open>
             <summary>Household setup</summary>
             <div class="section-content">
@@ -415,7 +445,7 @@
             </div>
           </details>
 
-          <details class="input-section">
+          <details class="input-section" id="incomeAdjustmentsSection">
             <summary>Income requirement adjustments</summary>
             <div class="section-content">
 
@@ -1234,7 +1264,7 @@
           </div>
 
           <div class="field">
-            <label for="investmentManagementFee">Investment management fee <span>deducted from investment returns</span></label>
+            <label for="investmentManagementFee">Investment management fee <span>deducted from all investment returns</span></label>
             <select id="investmentManagementFee"></select>
           </div>
 
@@ -1277,7 +1307,7 @@
         <div class="panel">
           <div class="panel-header">
             <h2>Retirement projection</h2>
-            <p>Income is projected from the first retirement period through the last life expectancy, with age timing tracked internally in whole months so 0 months is a valid exact-birthday choice. Stacked bars start at the first retirement year. The red line shows the exact desired income after adjustments, while the dashed black line shows the baseline desired income before adjustments. Hovering over the chart shows total income, target income, surplus or shortfall, and tax context.</p>
+            <p>Income is projected from the first retirement period through the last life expectancy. Red line shows desired income after adjustments, dashed black line shows the baseline desired income before any adjustments. Hovering over bar chartt to show total income, target income, surplus or shortfall, and tax context.</p>
           </div>
 
                       <div class="summary-sticky">
