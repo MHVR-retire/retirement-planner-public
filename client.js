@@ -70,6 +70,7 @@
     province: "ON",
     returnRate: 5,
     postRetirementReturnRate: 4,
+    investmentManagementFee: 1,
     inflationRate: 2,
     economicEvent1Person: "none", economicEvent1StartAge: 65, economicEvent1StartAgeMonth: 0, economicEvent1DurationMonths: 12, economicEvent1ReturnRate: -10, economicEvent1InflationRate: 4, economicEvent1Description: "",
     economicEvent2Person: "none", economicEvent2StartAge: 65, economicEvent2StartAgeMonth: 0, economicEvent2DurationMonths: 12, economicEvent2ReturnRate: 8, economicEvent2InflationRate: 2, economicEvent2Description: "",
@@ -633,6 +634,7 @@ link.download = safeScenarioName
 
     populatePercent("returnRate", 0, 10, 0.1, defaults.returnRate);
     populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
+    populatePercent("investmentManagementFee", 0.25, 2, 0.25, defaults.investmentManagementFee);
     populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
 
     setDefaults();
