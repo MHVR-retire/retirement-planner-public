@@ -75,10 +75,14 @@
     postRetirementReturnRate: 4,
     investmentManagementFee: 1,
     inflationRate: 2,
-    sensitivityRetirementPerson: "p1",
-    sensitivityRetirementYears: -2,
-    sensitivityLifePerson: "p1",
-    sensitivityLifeYears: 5,
+    sensitivityRetirement1Person: "p1",
+    sensitivityRetirement1Years: -2,
+    sensitivityRetirement2Person: "p1",
+    sensitivityRetirement2Years: 2,
+    sensitivityLife1Person: "p1",
+    sensitivityLife1Years: 5,
+    sensitivityLife2Person: "p1",
+    sensitivityLife2Years: -5,
     sensitivityInvestment1: -1,
     sensitivityInvestment2: 1,
     sensitivityInflation1: 1,
@@ -638,14 +642,26 @@ link.download = safeScenarioName
 
   function sensitivityScenarioPayload() {
     return {
-      retirement: {
-        person: selected("sensitivityRetirementPerson"),
-        years: value("sensitivityRetirementYears")
-      },
-      lifeExpectancy: {
-        person: selected("sensitivityLifePerson"),
-        years: value("sensitivityLifeYears")
-      },
+      retirementChanges: [
+        {
+          person: selected("sensitivityRetirement1Person"),
+          years: value("sensitivityRetirement1Years")
+        },
+        {
+          person: selected("sensitivityRetirement2Person"),
+          years: value("sensitivityRetirement2Years")
+        }
+      ],
+      lifeExpectancyChanges: [
+        {
+          person: selected("sensitivityLife1Person"),
+          years: value("sensitivityLife1Years")
+        },
+        {
+          person: selected("sensitivityLife2Person"),
+          years: value("sensitivityLife2Years")
+        }
+      ],
       investmentChanges: [
         value("sensitivityInvestment1"),
         value("sensitivityInvestment2")
@@ -696,6 +712,7 @@ link.download = safeScenarioName
       });
 
       if (status) status.textContent = "Sensitivity analysis complete. Each row is compared independently with the base case.";
+      document.getElementById("sensitivityOutputPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
       if (status) {
         status.className = "sensitivity-status error";
@@ -766,8 +783,10 @@ link.download = safeScenarioName
     populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
     populatePercent("investmentManagementFee", 0.25, 2, 0.25, defaults.investmentManagementFee);
     populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
-    populateSignedYears("sensitivityRetirementYears", -10, 10, defaults.sensitivityRetirementYears);
-    populateSignedYears("sensitivityLifeYears", -15, 15, defaults.sensitivityLifeYears);
+    populateSignedYears("sensitivityRetirement1Years", -10, 10, defaults.sensitivityRetirement1Years);
+    populateSignedYears("sensitivityRetirement2Years", -10, 10, defaults.sensitivityRetirement2Years);
+    populateSignedYears("sensitivityLife1Years", -15, 15, defaults.sensitivityLife1Years);
+    populateSignedYears("sensitivityLife2Years", -15, 15, defaults.sensitivityLife2Years);
     populateSignedSensitivityPercent("sensitivityInvestment1", -5, 5, 0.25, defaults.sensitivityInvestment1);
     populateSignedSensitivityPercent("sensitivityInvestment2", -5, 5, 0.25, defaults.sensitivityInvestment2);
     populateSignedSensitivityPercent("sensitivityInflation1", -3, 5, 0.25, defaults.sensitivityInflation1);

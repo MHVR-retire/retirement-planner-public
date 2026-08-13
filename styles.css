@@ -1300,3 +1300,50 @@
 .sensitivity-status.error {
   color: #b91c1c;
 }
+
+
+/* V3.1 sensitivity layout */
+.sensitivity-scenario-heading {
+  margin: 14px 0 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.sensitivity-output-panel {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid #d7dee8;
+  border-radius: 10px;
+  background: #fff;
+}
+.sensitivity-output-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sensitivity-output-header h3 {
+  margin: 0 0 4px;
+}
+.sensitivity-output-header p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+.sensitivity-output-panel .sensitivity-results {
+  font-size: 0.95rem;
+}
+.sensitivity-output-panel .sensitivity-results th,
+.sensitivity-output-panel .sensitivity-results td {
+  padding: 11px 12px;
+}
+.sensitivity-output-panel .sensitivity-results th {
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .sensitivity-output-header {
+    display: block;
+  }
+  .sensitivity-output-panel {
+    padding: 10px;
+  }
+}
