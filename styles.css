@@ -1347,7 +1347,7 @@
 /* Make Change vs. Base column narrower */
 .sensitivity-results th:nth-child(2),
 .sensitivity-results td:nth-child(2) {
-  width: 30%;
+  width: 25%;
   max-width: 250px;
   white-space: normal;
 }
