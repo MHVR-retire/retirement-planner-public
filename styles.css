@@ -1262,3 +1262,41 @@
     font-size: 13px;
   }
 }
+
+
+/* V3.0 sensitivity analysis */
+.sensitivity-results-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.sensitivity-results {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #fff;
+}
+.sensitivity-results th,
+.sensitivity-results td {
+  padding: 9px 10px;
+  border: 1px solid #d7dee8;
+  text-align: left;
+  vertical-align: top;
+}
+.sensitivity-results th {
+  background: #f3f6fa;
+  font-weight: 700;
+}
+.sensitivity-results td:nth-child(3),
+.sensitivity-results td:nth-child(4) {
+  text-align: right;
+  white-space: nowrap;
+}
+.sensitivity-status {
+  min-height: 1.25em;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+.sensitivity-status.error {
+  color: #b91c1c;
+}
