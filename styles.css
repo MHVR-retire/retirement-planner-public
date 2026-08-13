@@ -1331,12 +1331,12 @@
   font-size: 0.88rem;
 }
 .sensitivity-results-wrap {
-  width: 100%;
+  width: 90%;
   overflow-x: visible;
 }
 
 .sensitivity-results {
-  width: 100%;
+  width: 90%;
   table-layout: fixed;
 }
 
@@ -1389,7 +1389,7 @@
 .sensitivity-output-panel {
   position: relative;
   display: block;
-  width: 100%;
+  width: 90%;
   box-sizing: border-box;
   clear: both;
 }
