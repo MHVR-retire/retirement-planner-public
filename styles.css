@@ -1144,7 +1144,8 @@
   .chart-title { display:block; }
   .chart-title h3 { font-size:17px; line-height:1.3; }
   .chart-title p { font-size:14px; line-height:1.45; }
-  .chart-wrap width: 100%; height: 520px; min-height: 520px;} .balance-wrap { width: 100%;  height: 380px;  min-height: 380px;}
+  .chart-wrap { width: 100%; height: 520px; min-height: 520px; }
+  .balance-wrap { width: 100%; height: 380px; min-height: 380px; }
                                                                              canvas { max-width:100% !important; }
   .table-wrap, .projection-detail .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   table { font-size:12px; }
@@ -1329,27 +1330,15 @@
   margin: 0;
   font-size: 0.88rem;
 }
-.sensitivity-output-panel .sensitivity-results-wrap {
-  width: 85%;
-  margin-left: auto;
-  margin-right: auto;
-}
 .sensitivity-output-panel .sensitivity-results {
-  font-size: 0.7rem;
+  font-size: 0.95rem;
 }
 .sensitivity-output-panel .sensitivity-results th,
 .sensitivity-output-panel .sensitivity-results td {
-  padding: 8px 9px;
+  padding: 11px 12px;
 }
 .sensitivity-output-panel .sensitivity-results th {
   white-space: nowrap;
-}
-/* Make Change vs. Base column narrower */
-.sensitivity-results th:nth-child(2),
-.sensitivity-results td:nth-child(2) {
-  width: 25%;
-  max-width: 250px;
-  white-space: normal;
 }
 @media (max-width: 720px) {
   .sensitivity-output-header {
@@ -1358,4 +1347,24 @@
   .sensitivity-output-panel {
     padding: 10px;
   }
+}
+
+
+/* V3.1 layout fix: keep sensitivity table outside the chart canvas area */
+.sensitivity-output-panel {
+  position: relative;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  clear: both;
+}
+
+.chart-wrap {
+  position: relative;
+  display: block;
+  clear: both;
+}
+
+.chart-wrap canvas {
+  display: block;
 }
