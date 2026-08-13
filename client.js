@@ -75,6 +75,20 @@
     postRetirementReturnRate: 4,
     investmentManagementFee: 1,
     inflationRate: 2,
+    sensitivityRetirement1Person: "p1",
+    sensitivityRetirement1Years: -2,
+    sensitivityRetirement2Person: "p1",
+    sensitivityRetirement2Years: 2,
+    sensitivityLife1Person: "p1",
+    sensitivityLife1Years: 5,
+    sensitivityLife2Person: "p1",
+    sensitivityLife2Years: -5,
+    sensitivityInvestment1: -1,
+    sensitivityInvestment2: 1,
+    sensitivityInflation1: 1,
+    sensitivityInflation2: -1,
+    sensitivityAfterTaxIncome1: -10000,
+    sensitivityAfterTaxIncome2: 10000,
     economicEvent1Person: "none", economicEvent1StartAge: 65, economicEvent1StartAgeMonth: 0, economicEvent1DurationMonths: 12, economicEvent1ReturnRate: -10, economicEvent1InflationRate: 4, economicEvent1Description: "",
     economicEvent2Person: "none", economicEvent2StartAge: 65, economicEvent2StartAgeMonth: 0, economicEvent2DurationMonths: 12, economicEvent2ReturnRate: 8, economicEvent2InflationRate: 2, economicEvent2Description: "",
     economicEvent3Person: "none", economicEvent3StartAge: 65, economicEvent3StartAgeMonth: 0, economicEvent3DurationMonths: 12, economicEvent3ReturnRate: 5, economicEvent3InflationRate: 2, economicEvent3Description: "",
@@ -600,6 +614,134 @@ link.download = safeScenarioName
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+
+  function populateSignedYears(id, start, end, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end; amount++) {
+      const option = document.createElement("option");
+      option.value = amount;
+      option.textContent = (amount > 0 ? "+" : "") + amount + (Math.abs(amount) === 1 ? " year" : " years");
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+
+  function populateSignedSensitivityCurrency(id, start, end, step, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end; amount += step) {
+      const option = document.createElement("option");
+      option.value = amount;
+      const sign = amount > 0 ? "+" : amount < 0 ? "-" : "";
+      option.textContent = sign + "$" + Math.abs(amount).toLocaleString("en-CA", { maximumFractionDigits: 0 });
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+  function populateSignedSensitivityPercent(id, start, end, step, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end + 0.0001; amount += step) {
+      const rounded = Math.round(amount * 100) / 100;
+      const option = document.createElement("option");
+      option.value = rounded;
+      option.textContent = (rounded > 0 ? "+" : "") + rounded.toFixed(2) + "%";
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+  function sensitivityScenarioPayload() {
+    return {
+      retirementChanges: [
+        {
+          person: selected("sensitivityRetirement1Person"),
+          years: value("sensitivityRetirement1Years")
+        },
+        {
+          person: selected("sensitivityRetirement2Person"),
+          years: value("sensitivityRetirement2Years")
+        }
+      ],
+      lifeExpectancyChanges: [
+        {
+          person: selected("sensitivityLife1Person"),
+          years: value("sensitivityLife1Years")
+        },
+        {
+          person: selected("sensitivityLife2Person"),
+          years: value("sensitivityLife2Years")
+        }
+      ],
+      investmentChanges: [
+        value("sensitivityInvestment1"),
+        value("sensitivityInvestment2")
+      ],
+      inflationChanges: [
+        value("sensitivityInflation1"),
+        value("sensitivityInflation2")
+      ],
+      afterTaxIncomeChanges: [
+        value("sensitivityAfterTaxIncome1"),
+        value("sensitivityAfterTaxIncome2")
+      ]
+    };
+  }
+
+  async function runSensitivityAnalysis() {
+    const status = document.getElementById("sensitivityStatus");
+    const body = document.getElementById("sensitivityResultsBody");
+    if (!body) return;
+
+    if (status) {
+      status.className = "sensitivity-status";
+      status.textContent = "Running independent scenarios securely...";
+    }
+
+    try {
+      const response = await fetch(API_BASE_URL + "/api/sensitivity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          baseInputs: collectPlannerInputs().values,
+          scenarios: sensitivityScenarioPayload()
+        })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error || "Sensitivity analysis could not be completed.");
+      }
+
+      body.innerHTML = "";
+      (result.results || []).forEach(item => {
+        const row = document.createElement("tr");
+        const fundingText = item.error ? "N/A" : Number(item.fundingRatio || 0).toFixed(0) + "%";
+        const savingsText = item.error ? "N/A" : formatMoney(item.finalSavings || 0);
+        row.innerHTML =
+          "<td>" + escapeHtml(item.name || "") + "</td>" +
+          "<td>" + escapeHtml(item.description || "") + (item.error ? "<br><small>" + escapeHtml(item.error) + "</small>" : "") + "</td>" +
+          "<td>" + fundingText + "</td>" +
+          "<td>" + savingsText + "</td>";
+        body.appendChild(row);
+      });
+
+      if (status) status.textContent = "Sensitivity analysis complete. Each row is compared independently with the base case.";
+      document.getElementById("sensitivityOutputPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      if (status) {
+        status.className = "sensitivity-status error";
+        status.textContent = error.message || "Sensitivity analysis failed.";
+      }
+    }
+  }
+
   function initialize() {
     ["p1CurrentAge", "p2CurrentAge"].forEach(id => populateAge(id, 18, 75, defaults[id]));
     ["p1RetirementAge", "p2RetirementAge"].forEach(id => populateAge(id, 50, 75, defaults[id]));
@@ -662,6 +804,16 @@ link.download = safeScenarioName
     populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
     populatePercent("investmentManagementFee", 0.25, 2, 0.25, defaults.investmentManagementFee);
     populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
+    populateSignedYears("sensitivityRetirement1Years", -10, 10, defaults.sensitivityRetirement1Years);
+    populateSignedYears("sensitivityRetirement2Years", -10, 10, defaults.sensitivityRetirement2Years);
+    populateSignedYears("sensitivityLife1Years", -15, 15, defaults.sensitivityLife1Years);
+    populateSignedYears("sensitivityLife2Years", -15, 15, defaults.sensitivityLife2Years);
+    populateSignedSensitivityPercent("sensitivityInvestment1", -5, 5, 0.25, defaults.sensitivityInvestment1);
+    populateSignedSensitivityPercent("sensitivityInvestment2", -5, 5, 0.25, defaults.sensitivityInvestment2);
+    populateSignedSensitivityPercent("sensitivityInflation1", -3, 5, 0.25, defaults.sensitivityInflation1);
+    populateSignedSensitivityPercent("sensitivityInflation2", -3, 5, 0.25, defaults.sensitivityInflation2);
+    populateSignedSensitivityCurrency("sensitivityAfterTaxIncome1", -30000, 30000, 2000, defaults.sensitivityAfterTaxIncome1);
+    populateSignedSensitivityCurrency("sensitivityAfterTaxIncome2", -30000, 30000, 2000, defaults.sensitivityAfterTaxIncome2);
 
     setDefaults();
 
@@ -675,6 +827,7 @@ link.download = safeScenarioName
     }
 
     document.getElementById("calculateBtn").addEventListener("click", calculate);
+    document.getElementById("runSensitivityBtn")?.addEventListener("click", runSensitivityAnalysis);
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       calculate();

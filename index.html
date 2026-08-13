@@ -1275,6 +1275,131 @@
             </div>
           </details>
 
+          <details class="input-section" id="sensitivitySection">
+            <summary>V3.0 Sensitivity scenarios</summary>
+            <div class="section-content">
+              <p class="disclaimer">
+                Each sensitivity scenario is calculated independently from the current base case. Scenario changes are not combined with one another. Results show the funding ratio and final investment savings for each case.
+              </p>
+
+              <div class="person-card">
+                <h3>Retirement age sensitivity</h3>
+                <div class="sensitivity-scenario-heading">Scenario 1</div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityRetirement1Person">Person affected</label>
+                    <select id="sensitivityRetirement1Person">
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityRetirement1Years">Years earlier / later <span>negative = earlier</span></label>
+                    <select id="sensitivityRetirement1Years"></select>
+                  </div>
+                </div>
+                <div class="sensitivity-scenario-heading">Scenario 2</div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityRetirement2Person">Person affected</label>
+                    <select id="sensitivityRetirement2Person">
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityRetirement2Years">Years earlier / later <span>negative = earlier</span></label>
+                    <select id="sensitivityRetirement2Years"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Life expectancy sensitivity</h3>
+                <div class="sensitivity-scenario-heading">Scenario 1</div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityLife1Person">Person affected</label>
+                    <select id="sensitivityLife1Person">
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityLife1Years">Years shorter / longer <span>negative = shorter</span></label>
+                    <select id="sensitivityLife1Years"></select>
+                  </div>
+                </div>
+                <div class="sensitivity-scenario-heading">Scenario 2</div>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityLife2Person">Person affected</label>
+                    <select id="sensitivityLife2Person">
+                      <option value="p1">Person 1</option>
+                      <option value="p2">Person 2</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityLife2Years">Years shorter / longer <span>negative = shorter</span></label>
+                    <select id="sensitivityLife2Years"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Investment return sensitivity</h3>
+                <p class="disclaimer">Percentage-point change applied to both the pre-retirement and post-retirement investment return assumptions. The investment management fee continues to apply.</p>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityInvestment1">Scenario 1 change</label>
+                    <select id="sensitivityInvestment1"></select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityInvestment2">Scenario 2 change</label>
+                    <select id="sensitivityInvestment2"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Inflation sensitivity</h3>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityInflation1">Scenario 1 change</label>
+                    <select id="sensitivityInflation1"></select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityInflation2">Scenario 2 change</label>
+                    <select id="sensitivityInflation2"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="person-card">
+                <h3>Desired after-tax annual income sensitivity</h3>
+                <p class="disclaimer">
+                  Each scenario changes the household's desired after-tax annual retirement income relative to the base case. The change is applied independently and does not combine with other sensitivity scenarios.
+                </p>
+                <div class="two-col">
+                  <div class="field">
+                    <label for="sensitivityAfterTaxIncome1">Scenario 1 change</label>
+                    <select id="sensitivityAfterTaxIncome1"></select>
+                  </div>
+                  <div class="field">
+                    <label for="sensitivityAfterTaxIncome2">Scenario 2 change</label>
+                    <select id="sensitivityAfterTaxIncome2"></select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="button-row">
+                <button class="primary" id="runSensitivityBtn" type="button">Run sensitivity analysis</button>
+              </div>
+
+
+            </div>
+          </details>
+
           <div class="button-row">
             <button class="primary" id="calculateBtn">Calculate</button>
             <button class="secondary" id="resetBtn">Reset defaults</button>
@@ -1403,6 +1528,33 @@
                   </div>
                 </div>
               </div>
+              <div class="sensitivity-output-panel" id="sensitivityOutputPanel">
+            <div class="sensitivity-output-header">
+              <div>
+                <h3>Sensitivity analysis</h3>
+                <p>Each scenario is compared independently with the current base case.</p>
+              </div>
+              <div id="sensitivityStatus" class="sensitivity-status"></div>
+            </div>
+            <div class="sensitivity-results-wrap">
+              <table class="sensitivity-results">
+                <thead>
+                  <tr>
+                    <th>Scenario</th>
+                    <th>Change vs. base</th>
+                    <th>Funding ratio</th>
+                    <th>Final savings</th>
+                  </tr>
+                </thead>
+                <tbody id="sensitivityResultsBody">
+                  <tr>
+                    <td colspan="4">Run sensitivity analysis to compare scenarios.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
               <div class="chart-wrap">
                 <canvas id="incomeChart"></canvas>
               </div>
