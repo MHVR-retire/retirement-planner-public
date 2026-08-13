@@ -1330,6 +1330,11 @@
   margin: 0;
   font-size: 0.88rem;
 }
+.sensitivity-output-panel .sensitivity-results-wrap {
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
+}
 .sensitivity-output-panel .sensitivity-results {
   font-size: 0.7rem;
 }
