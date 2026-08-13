@@ -1329,12 +1329,17 @@
   margin: 0;
   font-size: 0.88rem;
 }
+.sensitivity-output-panel .sensitivity-results-wrap {
+  width: 75%;
+  margin-left: auto;
+  margin-right: auto;
+}
 .sensitivity-output-panel .sensitivity-results {
-  font-size: 0.95rem;
+  font-size: 0.7rem;
 }
 .sensitivity-output-panel .sensitivity-results th,
 .sensitivity-output-panel .sensitivity-results td {
-  padding: 11px 12px;
+  padding: 8px 9px;
 }
 .sensitivity-output-panel .sensitivity-results th {
   white-space: nowrap;
