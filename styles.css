@@ -1330,7 +1330,7 @@
   font-size: 0.88rem;
 }
 .sensitivity-output-panel .sensitivity-results-wrap {
-  width: 75%;
+  width: 85%;
   margin-left: auto;
   margin-right: auto;
 }
@@ -1343,6 +1343,13 @@
 }
 .sensitivity-output-panel .sensitivity-results th {
   white-space: nowrap;
+}
+/* Make Change vs. Base column narrower */
+.sensitivity-results th:nth-child(2),
+.sensitivity-results td:nth-child(2) {
+  width: 30%;
+  max-width: 250px;
+  white-space: normal;
 }
 @media (max-width: 720px) {
   .sensitivity-output-header {
