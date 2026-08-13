@@ -1372,9 +1372,7 @@
 .sensitivity-output-panel .sensitivity-results td {
   padding: 8px 9px;
 }
-.sensitivity-output-panel .sensitivity-results th {
-  white-space: nowrap;
-}
+
 @media (max-width: 720px) {
   .sensitivity-output-header {
     display: block;
@@ -1402,4 +1400,58 @@
 
 .chart-wrap canvas {
   display: block;
+}
+/* ===== Sensitivity table - force fit inside container ===== */
+
+.sensitivity-output-panel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.sensitivity-output-panel .sensitivity-results-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin: 12px 0 0 0;
+}
+
+.sensitivity-output-panel .sensitivity-results {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;          /* overrides global table min-width: 940px */
+  table-layout: fixed;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+
+.sensitivity-output-panel .sensitivity-results th,
+.sensitivity-output-panel .sensitivity-results td {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  padding: 7px 6px;
+  box-sizing: border-box;
+}
+
+/* Column widths */
+.sensitivity-output-panel .sensitivity-results th:nth-child(1),
+.sensitivity-output-panel .sensitivity-results td:nth-child(1) {
+  width: 22%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(2),
+.sensitivity-output-panel .sensitivity-results td:nth-child(2) {
+  width: 36%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(3),
+.sensitivity-output-panel .sensitivity-results td:nth-child(3) {
+  width: 18%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(4),
+.sensitivity-output-panel .sensitivity-results td:nth-child(4) {
+  width: 24%;
 }
