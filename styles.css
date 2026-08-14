@@ -1144,7 +1144,8 @@
   .chart-title { display:block; }
   .chart-title h3 { font-size:17px; line-height:1.3; }
   .chart-title p { font-size:14px; line-height:1.45; }
-  .chart-wrap width: 100%; height: 520px; min-height: 520px;} .balance-wrap { width: 100%;  height: 380px;  min-height: 380px;}
+  .chart-wrap { width: 100%; height: 520px; min-height: 520px; }
+  .balance-wrap { width: 100%; height: 380px; min-height: 380px; }
                                                                              canvas { max-width:100% !important; }
   .table-wrap, .projection-detail .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
   table { font-size:12px; }
@@ -1261,4 +1262,196 @@
   .scenario-control-heading span {
     font-size: 13px;
   }
+}
+
+
+/* V3.0 sensitivity analysis */
+.sensitivity-results-wrap {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 12px;
+}
+.sensitivity-results {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #fff;
+}
+.sensitivity-results th,
+.sensitivity-results td {
+  padding: 9px 10px;
+  border: 1px solid #d7dee8;
+  text-align: left;
+  vertical-align: top;
+}
+.sensitivity-results th {
+  background: #f3f6fa;
+  font-weight: 700;
+}
+.sensitivity-results td:nth-child(3),
+.sensitivity-results td:nth-child(4) {
+  text-align: right;
+  white-space: nowrap;
+}
+.sensitivity-status {
+  min-height: 1.25em;
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+.sensitivity-status.error {
+  color: #b91c1c;
+}
+
+
+/* V3.1 sensitivity layout */
+.sensitivity-scenario-heading {
+  margin: 14px 0 6px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.sensitivity-output-panel {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid #d7dee8;
+  border-radius: 10px;
+  background: #fff;
+}
+.sensitivity-output-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sensitivity-output-header h3 {
+  margin: 0 0 4px;
+}
+.sensitivity-output-header p {
+  margin: 0;
+  font-size: 0.88rem;
+}
+.sensitivity-results-wrap {
+  width: 90%;
+  overflow-x: visible;
+}
+
+.sensitivity-results {
+  width: 90%;
+  table-layout: fixed;
+}
+
+.sensitivity-results th,
+.sensitivity-results td {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.sensitivity-results th:nth-child(1),
+.sensitivity-results td:nth-child(1) {
+  width: 22%;
+}
+
+.sensitivity-results th:nth-child(2),
+.sensitivity-results td:nth-child(2) {
+  width: 38%;
+}
+
+.sensitivity-results th:nth-child(3),
+.sensitivity-results td:nth-child(3) {
+  width: 18%;
+}
+
+.sensitivity-results th:nth-child(4),
+.sensitivity-results td:nth-child(4) {
+  width: 22%;
+}
+.sensitivity-output-panel .sensitivity-results {
+  font-size: 0.7rem;
+}
+.sensitivity-output-panel .sensitivity-results th,
+.sensitivity-output-panel .sensitivity-results td {
+  padding: 8px 9px;
+}
+
+@media (max-width: 720px) {
+  .sensitivity-output-header {
+    display: block;
+  }
+  .sensitivity-output-panel {
+    padding: 10px;
+  }
+}
+
+
+/* V3.1 layout fix: keep sensitivity table outside the chart canvas area */
+.sensitivity-output-panel {
+  position: relative;
+  display: block;
+  width: 90%;
+  box-sizing: border-box;
+  clear: both;
+}
+
+.chart-wrap {
+  position: relative;
+  display: block;
+  clear: both;
+}
+
+.chart-wrap canvas {
+  display: block;
+}
+/* ===== Sensitivity table - force fit inside container ===== */
+
+.sensitivity-output-panel {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.sensitivity-output-panel .sensitivity-results-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin: 12px 0 0 0;
+}
+
+.sensitivity-output-panel .sensitivity-results {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;          /* overrides global table min-width: 940px */
+  table-layout: fixed;
+  border-collapse: collapse;
+  box-sizing: border-box;
+}
+
+.sensitivity-output-panel .sensitivity-results th,
+.sensitivity-output-panel .sensitivity-results td {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  padding: 7px 6px;
+  box-sizing: border-box;
+}
+
+/* Column widths */
+.sensitivity-output-panel .sensitivity-results th:nth-child(1),
+.sensitivity-output-panel .sensitivity-results td:nth-child(1) {
+  width: 22%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(2),
+.sensitivity-output-panel .sensitivity-results td:nth-child(2) {
+  width: 36%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(3),
+.sensitivity-output-panel .sensitivity-results td:nth-child(3) {
+  width: 18%;
+}
+
+.sensitivity-output-panel .sensitivity-results th:nth-child(4),
+.sensitivity-output-panel .sensitivity-results td:nth-child(4) {
+  width: 24%;
 }
