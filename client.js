@@ -760,13 +760,13 @@ link.download = safeScenarioName
         const fundingRatio = Number(item.fundingRatio || 0);
         const fundingText = item.error ? "N/A" : fundingRatio.toFixed(0) + "%";
         const savingsText = item.error ? "N/A" : formatMoney(item.finalSavings || 0);
-        const shortfallText = item.error || fundingRatio >= 100 ? "—" : (item.shortfallAge || "Not available");
+        const fundsDepletedText = item.error ? "—" : (item.fundsDepletedAge || "—");
         row.innerHTML =
           "<td>" + escapeHtml(item.name || "") + "</td>" +
           "<td>" + escapeHtml(item.description || "") + (item.error ? "<br><small>" + escapeHtml(item.error) + "</small>" : "") + "</td>" +
           "<td>" + fundingText + "</td>" +
           "<td>" + savingsText + "</td>" +
-          "<td>" + escapeHtml(shortfallText) + "</td>";
+          "<td>" + escapeHtml(fundsDepletedText) + "</td>";
         body.appendChild(row);
       });
 
@@ -1266,20 +1266,20 @@ link.download = safeScenarioName
     return row.ageLabel ? "Age " + row.ageLabel : "";
   }
 
-  function firstIncomeShortfallAge(rows) {
+  function firstFundsDepletedAge(rows) {
     const retirementRows = (rows || []).filter(row => row.isRetirementProjectionYear);
-    const shortfallRows = retirementRows.filter(row => {
-      const available = rowDisplayTotalIncome(row, 1);
-      const required = chartTargetValue(row, 1);
-      return required > 0 && available + 0.01 < required;
-    });
-    if (!shortfallRows.length) return "";
 
-    // Prefer the first shortfall after only one survivor remains, matching the requested
-    // "last living person" age. If the plan fails earlier while both are alive and later
-    // recovers for the survivor, fall back to the first household shortfall age.
-    const survivorShortfall = shortfallRows.find(row => row.aliveLabel === "Person 1" || row.aliveLabel === "Person 2");
-    return formatShortfallAgeFromRow(survivorShortfall || shortfallRows[0]);
+    const depletedRow = retirementRows.find(row => {
+      const totalFunds =
+        Number(row.remainingRRSP || 0) +
+        Number(row.remainingTFSA || 0) +
+        Number(row.remainingNonRegistered || 0) +
+        Number(row.surplusSavingsBalance || 0);
+
+      return totalFunds <= 0.01;
+    });
+
+    return formatShortfallAgeFromRow(depletedRow);
   }
 
   function updateSummary(rows, p1, p2, realReturn, postRetirementRealReturn, monthlyPostRetirementRealReturn) {
@@ -1358,10 +1358,10 @@ link.download = safeScenarioName
       goalValue.textContent = fundingRatioPercent.toFixed(0) + "%";
 
       const goalShortfallAge = document.getElementById("metricGoalShortfallAge");
-      const shortfallAgeText = fundingRatioPercent < 100 ? firstIncomeShortfallAge(rows) : "";
+      const fundsDepletedAgeText = firstFundsDepletedAge(rows);
       if (goalShortfallAge) {
-        goalShortfallAge.textContent = shortfallAgeText ? "Income shortfall: " + shortfallAgeText : "";
-        goalShortfallAge.classList.toggle("hidden", !shortfallAgeText);
+        goalShortfallAge.textContent = fundsDepletedAgeText ? "Funds depleted: " + fundsDepletedAgeText : "";
+        goalShortfallAge.classList.toggle("hidden", !fundsDepletedAgeText);
       }
 
       if (status) {
@@ -1383,7 +1383,7 @@ link.download = safeScenarioName
         ". Income Required: " + formatMoney(lifetimeRequiredIncome) +
         ". Lifetime Shortfall: " + formatMoney(lifetimeShortfall) +
         ". Ending Savings: " + formatMoney(endingSavings) +
-        (shortfallAgeText ? ". First survivor income shortfall: " + shortfallAgeText : "") +
+        (fundsDepletedAgeText ? ". Funds depleted at: " + fundsDepletedAgeText : ". Funds are not depleted during the projection") +
         ". Formula: (covered income + ending savings) divided by required income.";
 
       goalCard.title = noteText;
