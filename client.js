@@ -593,6 +593,8 @@ link.download = safeScenarioName
     const eventCount = document.getElementById("economicEventCount");
     const lumpBadge = document.getElementById("lumpSumCountBadge");
     const lumpCount = document.getElementById("lumpSumCount");
+    const surplusBadge = document.getElementById("surplusHandlingBadge");
+    const surplusLabel = document.getElementById("surplusHandlingLabel");
 
     const eventsIgnored = selected("useEconomicEvents") === "ignore";
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
@@ -608,6 +610,16 @@ link.download = safeScenarioName
     if (lumpBadge) {
       lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
       lumpBadge.title = lumpSumsIgnored ? "Lump sums are currently ignored. Click to review the Lump Sum section." : (lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.");
+    }
+
+    const surplusInvested = selected("surplusHandling") === "save";
+    if (surplusLabel) surplusLabel.textContent = surplusInvested ? "Surplus Invested" : "Surplus Spent";
+    if (surplusBadge) {
+      surplusBadge.classList.toggle("invested", surplusInvested);
+      surplusBadge.classList.toggle("spent", !surplusInvested);
+      surplusBadge.title = surplusInvested
+        ? "After-tax retirement income surplus is saved in the surplus savings / GIC account. Click to review Rates and Assumptions."
+        : "Retirement income surplus is treated as spent and leaves the investment model. Click to review Rates and Assumptions.";
     }
   }
 
@@ -745,13 +757,16 @@ link.download = safeScenarioName
       body.innerHTML = "";
       (result.results || []).forEach(item => {
         const row = document.createElement("tr");
-        const fundingText = item.error ? "N/A" : Number(item.fundingRatio || 0).toFixed(0) + "%";
+        const fundingRatio = Number(item.fundingRatio || 0);
+        const fundingText = item.error ? "N/A" : fundingRatio.toFixed(0) + "%";
         const savingsText = item.error ? "N/A" : formatMoney(item.finalSavings || 0);
+        const shortfallText = item.error || fundingRatio >= 100 ? "—" : (item.shortfallAge || "Not available");
         row.innerHTML =
           "<td>" + escapeHtml(item.name || "") + "</td>" +
           "<td>" + escapeHtml(item.description || "") + (item.error ? "<br><small>" + escapeHtml(item.error) + "</small>" : "") + "</td>" +
           "<td>" + fundingText + "</td>" +
-          "<td>" + savingsText + "</td>";
+          "<td>" + savingsText + "</td>" +
+          "<td>" + escapeHtml(shortfallText) + "</td>";
         body.appendChild(row);
       });
 
@@ -870,6 +885,10 @@ link.download = safeScenarioName
 
     document.getElementById("lumpSumCountBadge")?.addEventListener("click", () => {
       openInputSection("lumpSumSection");
+    });
+
+    document.getElementById("surplusHandlingBadge")?.addEventListener("click", () => {
+      openInputSection("ratesAssumptionsSection");
     });
 
     document.getElementById("importInputsBtn").addEventListener("click", () => {
@@ -1236,6 +1255,33 @@ link.download = safeScenarioName
   }
 
 
+  function formatShortfallAgeFromRow(row) {
+    if (!row) return "";
+    if (row.aliveLabel === "Person 1") return "Person 1 age " + formatAgeYearsMonths(row.p1AgeValue || 0);
+    if (row.aliveLabel === "Person 2") return "Person 2 age " + formatAgeYearsMonths(row.p2AgeValue || 0);
+    if (row.aliveLabel === "Both") {
+      return "P1 age " + formatAgeYearsMonths(row.p1AgeValue || 0) +
+        " / P2 age " + formatAgeYearsMonths(row.p2AgeValue || 0);
+    }
+    return row.ageLabel ? "Age " + row.ageLabel : "";
+  }
+
+  function firstIncomeShortfallAge(rows) {
+    const retirementRows = (rows || []).filter(row => row.isRetirementProjectionYear);
+    const shortfallRows = retirementRows.filter(row => {
+      const available = rowDisplayTotalIncome(row, 1);
+      const required = chartTargetValue(row, 1);
+      return required > 0 && available + 0.01 < required;
+    });
+    if (!shortfallRows.length) return "";
+
+    // Prefer the first shortfall after only one survivor remains, matching the requested
+    // "last living person" age. If the plan fails earlier while both are alive and later
+    // recovers for the survivor, fall back to the first household shortfall age.
+    const survivorShortfall = shortfallRows.find(row => row.aliveLabel === "Person 1" || row.aliveLabel === "Person 2");
+    return formatShortfallAgeFromRow(survivorShortfall || shortfallRows[0]);
+  }
+
   function updateSummary(rows, p1, p2, realReturn, postRetirementRealReturn, monthlyPostRetirementRealReturn) {
     updateActiveInputNotices();
     const first = rows.find(row => row.isRetirementProjectionYear) || rows[0];
@@ -1311,6 +1357,13 @@ link.download = safeScenarioName
 
       goalValue.textContent = fundingRatioPercent.toFixed(0) + "%";
 
+      const goalShortfallAge = document.getElementById("metricGoalShortfallAge");
+      const shortfallAgeText = fundingRatioPercent < 100 ? firstIncomeShortfallAge(rows) : "";
+      if (goalShortfallAge) {
+        goalShortfallAge.textContent = shortfallAgeText ? "Income shortfall: " + shortfallAgeText : "";
+        goalShortfallAge.classList.toggle("hidden", !shortfallAgeText);
+      }
+
       if (status) {
         if (fundingRatioPercent >= 110) {
           status.className = "status good";
@@ -1330,6 +1383,7 @@ link.download = safeScenarioName
         ". Income Required: " + formatMoney(lifetimeRequiredIncome) +
         ". Lifetime Shortfall: " + formatMoney(lifetimeShortfall) +
         ". Ending Savings: " + formatMoney(endingSavings) +
+        (shortfallAgeText ? ". First survivor income shortfall: " + shortfallAgeText : "") +
         ". Formula: (covered income + ending savings) divided by required income.";
 
       goalCard.title = noteText;

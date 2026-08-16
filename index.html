@@ -1222,7 +1222,7 @@
             </div>
           </details>
 
-          <details class="input-section" open>
+          <details class="input-section" id="ratesAssumptionsSection" open>
             <summary>Rates and assumptions</summary>
             <div class="section-content">
 
@@ -1555,6 +1555,9 @@
                     <span class="summary-notice-label">Lump sums</span>
                     <span class="summary-notice-count" id="lumpSumCount">0</span>
                   </button>
+                  <button type="button" class="summary-notice surplus" id="surplusHandlingBadge" title="Retirement income surplus handling">
+                    <span class="summary-notice-label" id="surplusHandlingLabel">Surplus Spent</span>
+                  </button>
                 </div>
               </div>
 
@@ -1586,6 +1589,7 @@
               <div class="metric compact-note" id="metricGoalCard" title="Shows covered retirement income plus final savings divided by lifetime required income. Surplus in one year is not used to mask a shortfall in another year unless it remains as ending savings.">
                 <div class="label">Funding ratio <span class="info-dot">i</span></div>
                 <div class="value" id="metricGoalPercent">0%</div>
+                <div class="funding-shortfall-age hidden" id="metricGoalShortfallAge"></div>
                 <div class="note" id="metricGoalNote">All retirement years.</div>
               </div>
 
@@ -1652,11 +1656,12 @@
                     <th>Change vs. base</th>
                     <th>Funding ratio</th>
                     <th>Final savings</th>
+                    <th>Income shortfall age</th>
                   </tr>
                 </thead>
                 <tbody id="sensitivityResultsBody">
                   <tr>
-                    <td colspan="4">Run sensitivity analysis to compare scenarios.</td>
+                    <td colspan="5">Run sensitivity analysis to compare scenarios.</td>
                   </tr>
                 </tbody>
               </table>

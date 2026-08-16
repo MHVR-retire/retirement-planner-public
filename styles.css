@@ -1455,3 +1455,40 @@
 .sensitivity-output-panel .sensitivity-results td:nth-child(4) {
   width: 24%;
 }
+
+
+/* V3.4 surplus handling summary badge and funding shortfall age */
+.summary-notice.surplus {
+  color: #475569;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+.summary-notice.surplus.invested {
+  color: #166534;
+  background: #dcfce7;
+  border-color: #86efac;
+}
+.summary-notice.surplus.spent {
+  color: #92400e;
+  background: #fef3c7;
+  border-color: #fcd34d;
+}
+.funding-shortfall-age {
+  margin-top: 4px;
+  color: #b91c1c;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+/* Five-column sensitivity table */
+.sensitivity-output-panel .sensitivity-results th:nth-child(1),
+.sensitivity-output-panel .sensitivity-results td:nth-child(1) { width: 17%; }
+.sensitivity-output-panel .sensitivity-results th:nth-child(2),
+.sensitivity-output-panel .sensitivity-results td:nth-child(2) { width: 29%; }
+.sensitivity-output-panel .sensitivity-results th:nth-child(3),
+.sensitivity-output-panel .sensitivity-results td:nth-child(3) { width: 15%; }
+.sensitivity-output-panel .sensitivity-results th:nth-child(4),
+.sensitivity-output-panel .sensitivity-results td:nth-child(4) { width: 20%; }
+.sensitivity-output-panel .sensitivity-results th:nth-child(5),
+.sensitivity-output-panel .sensitivity-results td:nth-child(5) { width: 19%; }
