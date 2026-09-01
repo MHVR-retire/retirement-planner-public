@@ -633,8 +633,7 @@ link.download = safeScenarioName
       incomeBadge.classList.toggle("is-empty", incomeAdjustments.length === 0 || incomeAdjustmentsIgnored);
       incomeBadge.title = incomeAdjustmentsIgnored
         ? "Income adjustments are currently ignored. Click to review the Income Requirement Adjustments section."
-        : (incomeAdjustments.length ? incomeAdjustments.join("
-") : "No income adjustments selected. Click to review the Income Requirement Adjustments section.");
+        : (incomeAdjustments.length ? incomeAdjustments.join("\n") : "No income adjustments selected. Click to review the Income Requirement Adjustments section.");
     }
 
     if (eventBadge) {
@@ -646,8 +645,7 @@ link.download = safeScenarioName
       lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
       lumpBadge.title = lumpSumsIgnored
         ? "Lump sum adjustments are currently ignored. Click to review the Lump Sum section."
-        : (lumpSums.length ? lumpSums.join("
-") : "No lump sums selected. Click to review the Lump Sum section.");
+        : (lumpSums.length ? lumpSums.join("\n") : "No lump sums selected. Click to review the Lump Sum section.");
     }
 
     const surplusInvested = selected("surplusHandling") === "save";
