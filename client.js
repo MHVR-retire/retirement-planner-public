@@ -625,9 +625,9 @@ link.download = safeScenarioName
     const eventsIgnored = selected("useEconomicEvents") === "ignore";
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
-    if (incomeCount) incomeCount.textContent = incomeAdjustmentsIgnored ? "Ignored" : String(incomeAdjustments.length);
+    if (incomeCount) incomeCount.textContent = incomeAdjustmentsIgnored ? "Ignore" : String(incomeAdjustments.length);
     if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
-    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignored" : String(lumpSums.length);
+    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignore" : String(lumpSums.length);
 
     if (incomeBadge) {
       incomeBadge.classList.toggle("is-empty", incomeAdjustments.length === 0 || incomeAdjustmentsIgnored);
