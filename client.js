@@ -600,7 +600,7 @@ link.download = safeScenarioName
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
     if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
-    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignored" : String(lumpSums.length);
+    if (lumpCount) lumpCount.textContent = (lumpSumsIgnored ? "Ignore" : "Use") + " · " + lumpSums.length;
 
     if (eventBadge) {
       eventBadge.classList.toggle("is-empty", events.length === 0 || eventsIgnored);
@@ -609,7 +609,11 @@ link.download = safeScenarioName
 
     if (lumpBadge) {
       lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
-      lumpBadge.title = lumpSumsIgnored ? "Lump sums are currently ignored. Click to review the Lump Sum section." : (lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.");
+      lumpBadge.title = lumpSumsIgnored
+        ? ("Lump Sum Adjustment is ignored. " + lumpSums.length + " entered. Click to review the Lump Sum section.")
+        : (lumpSums.length
+            ? ("Lump Sum Adjustment is in use. " + lumpSums.length + " entered.\n" + lumpSums.join("\n"))
+            : "Lump Sum Adjustment is in use. No lump sums entered. Click to review the Lump Sum section.");
     }
 
     const surplusInvested = selected("surplusHandling") === "save";
@@ -1245,10 +1249,20 @@ link.download = safeScenarioName
     setText("scenarioPostReturn", value("postRetirementReturnRate").toFixed(1) + "%");
     setText("scenarioInflation", value("inflationRate").toFixed(1) + "%");
     setText("scenarioHomeGrowth", value("homeGrowthRate").toFixed(1) + "%");
-    setText("scenarioP1RetAge", formatAgeYearsMonths(ageInYears("p1RetirementAge", "p1RetirementAgeMonth")));
+    setText(
+      "scenarioP1RetAge",
+      formatAgeYearsMonths(ageInYears("p1RetirementAge", "p1RetirementAgeMonth")) +
+        " / Death " +
+        formatAgeYearsMonths(ageInYears("p1LifeExpectancy", "p1LifeExpectancyMonth"))
+    );
 
     if (selected("householdMode") === "couple") {
-      setText("scenarioP2RetAge", formatAgeYearsMonths(ageInYears("p2RetirementAge", "p2RetirementAgeMonth")));
+      setText(
+        "scenarioP2RetAge",
+        formatAgeYearsMonths(ageInYears("p2RetirementAge", "p2RetirementAgeMonth")) +
+          " / Death " +
+          formatAgeYearsMonths(ageInYears("p2LifeExpectancy", "p2LifeExpectancyMonth"))
+      );
     } else {
       setText("scenarioP2RetAge", "N/A");
     }

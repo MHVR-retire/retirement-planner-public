@@ -34,3 +34,8 @@ Update: Lump sum available balances are returned by the private server. Removals
 
 
 Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.
+
+V3.5 updates:
+- Projection header shows Lump Sum Adjustment Use/Ignore status and entered count.
+- Retirement scenario summary shows retirement age and age at death.
+- Sensitivity analysis compares Spend surplus vs Save surplus in GIC.
