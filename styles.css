@@ -1051,6 +1051,12 @@
       box-shadow: 0 4px 12px rgba(15, 23, 42, 0.10);
     }
 
+    .summary-notice.income {
+      color: #166534;
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
     .summary-notice.economic {
       color: #9a3412;
       background: #fff7ed;

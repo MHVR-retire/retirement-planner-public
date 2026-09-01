@@ -564,6 +564,28 @@ link.download = safeScenarioName
     return events;
   }
 
+  function getActiveIncomeAdjustments() {
+    const adjustments = [];
+    for (let i = 1; i <= 5; i++) {
+      const person = selected("adjustment" + i + "Person");
+      const amount = value("adjustment" + i + "Amount");
+      if (person === "none" || amount <= 0) continue;
+
+      const description = document.getElementById("adjustment" + i + "Description")?.value.trim();
+      const direction = selected("adjustment" + i + "Direction") === "decrease" ? "Decrease" : "Increase";
+      const frequency = selected("adjustment" + i + "Frequency") === "annual" ? "annual" : "monthly";
+      const age = value("adjustment" + i + "Age");
+      const month = value("adjustment" + i + "AgeMonth");
+
+      adjustments.push(
+        (description || "Income adjustment " + i) +
+        ": " + direction.toLowerCase() + " " + formatMoney(amount) +
+        " " + frequency + " from age " + age + "y " + month + "m"
+      );
+    }
+    return adjustments;
+  }
+
   function getActiveLumpSums() {
     const lumpSums = [];
     for (let i = 1; i <= 5; i++) {
@@ -586,9 +608,12 @@ link.download = safeScenarioName
   }
 
   function updateActiveInputNotices() {
+    const incomeAdjustments = getActiveIncomeAdjustments();
     const events = getActiveEconomicEvents();
     const lumpSums = getActiveLumpSums();
 
+    const incomeBadge = document.getElementById("incomeAdjustmentCountBadge");
+    const incomeCount = document.getElementById("incomeAdjustmentCount");
     const eventBadge = document.getElementById("economicEventCountBadge");
     const eventCount = document.getElementById("economicEventCount");
     const lumpBadge = document.getElementById("lumpSumCountBadge");
@@ -596,11 +621,22 @@ link.download = safeScenarioName
     const surplusBadge = document.getElementById("surplusHandlingBadge");
     const surplusLabel = document.getElementById("surplusHandlingLabel");
 
+    const incomeAdjustmentsIgnored = selected("useIncomeAdjustments") === "ignore";
     const eventsIgnored = selected("useEconomicEvents") === "ignore";
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
+    if (incomeCount) incomeCount.textContent = (incomeAdjustmentsIgnored ? "Ignore" : "Use") + " · " + incomeAdjustments.length;
     if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
     if (lumpCount) lumpCount.textContent = (lumpSumsIgnored ? "Ignore" : "Use") + " · " + lumpSums.length;
+
+    if (incomeBadge) {
+      incomeBadge.classList.toggle("is-empty", incomeAdjustments.length === 0 || incomeAdjustmentsIgnored);
+      incomeBadge.title = incomeAdjustmentsIgnored
+        ? ("Income Adjustment is ignored. " + incomeAdjustments.length + " entered. Click to review the Income Requirement Adjustments section.")
+        : (incomeAdjustments.length
+            ? ("Income Adjustment is in use. " + incomeAdjustments.length + " entered.\n" + incomeAdjustments.join("\n"))
+            : "Income Adjustment is in use. No income adjustments entered. Click to review the Income Requirement Adjustments section.");
+    }
 
     if (eventBadge) {
       eventBadge.classList.toggle("is-empty", events.length === 0 || eventsIgnored);
@@ -882,6 +918,10 @@ link.download = safeScenarioName
     document.getElementById("loadInputsBtn").addEventListener("click", loadInputs);
     document.getElementById("clearSavedInputsBtn").addEventListener("click", clearSavedInputs);
     document.getElementById("exportInputsBtn").addEventListener("click", exportInputs);
+
+    document.getElementById("incomeAdjustmentCountBadge")?.addEventListener("click", () => {
+      openInputSection("incomeAdjustmentsSection");
+    });
 
     document.getElementById("economicEventCountBadge")?.addEventListener("click", () => {
       openInputSection("economicEventsSection");
@@ -1249,22 +1289,15 @@ link.download = safeScenarioName
     setText("scenarioPostReturn", value("postRetirementReturnRate").toFixed(1) + "%");
     setText("scenarioInflation", value("inflationRate").toFixed(1) + "%");
     setText("scenarioHomeGrowth", value("homeGrowthRate").toFixed(1) + "%");
-    setText(
-      "scenarioP1RetAge",
-      formatAgeYearsMonths(ageInYears("p1RetirementAge", "p1RetirementAgeMonth")) +
-        " / Death " +
-        formatAgeYearsMonths(ageInYears("p1LifeExpectancy", "p1LifeExpectancyMonth"))
-    );
+    setText("scenarioP1RetAge", formatAgeYearsMonths(ageInYears("p1RetirementAge", "p1RetirementAgeMonth")));
+    setText("scenarioP1DeathAge", formatAgeYearsMonths(ageInYears("p1LifeExpectancy", "p1LifeExpectancyMonth")));
 
     if (selected("householdMode") === "couple") {
-      setText(
-        "scenarioP2RetAge",
-        formatAgeYearsMonths(ageInYears("p2RetirementAge", "p2RetirementAgeMonth")) +
-          " / Death " +
-          formatAgeYearsMonths(ageInYears("p2LifeExpectancy", "p2LifeExpectancyMonth"))
-      );
+      setText("scenarioP2RetAge", formatAgeYearsMonths(ageInYears("p2RetirementAge", "p2RetirementAgeMonth")));
+      setText("scenarioP2DeathAge", formatAgeYearsMonths(ageInYears("p2LifeExpectancy", "p2LifeExpectancyMonth")));
     } else {
       setText("scenarioP2RetAge", "N/A");
+      setText("scenarioP2DeathAge", "N/A");
     }
   }
 

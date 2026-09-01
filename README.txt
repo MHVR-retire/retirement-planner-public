@@ -39,3 +39,6 @@ V3.5 updates:
 - Projection header shows Lump Sum Adjustment Use/Ignore status and entered count.
 - Retirement scenario summary shows retirement age and age at death.
 - Sensitivity analysis compares Spend surplus vs Save surplus in GIC.
+V3.5 correction:
+- Added Income Adjustment Use/Ignore + entered count badge to the Retirement Projection header.
+- Retirement Scenario Summary now displays retirement age and age at death as separate values for each person.

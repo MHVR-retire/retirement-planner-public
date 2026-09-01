@@ -1547,6 +1547,10 @@
               <div class="summary-notice-row">
                 <div id="statusBadge" class="status warn">Calculating funding ratio...</div>
                 <div class="summary-input-notices" aria-label="Active scenario inputs">
+                  <button type="button" class="summary-notice income" id="incomeAdjustmentCountBadge" title="No income adjustments entered">
+                    <span class="summary-notice-label">Income Adjustment</span>
+                    <span class="summary-notice-count" id="incomeAdjustmentCount">Use · 0</span>
+                  </button>
                   <button type="button" class="summary-notice economic" id="economicEventCountBadge" title="No economic events selected">
                     <span class="summary-notice-label">Economic events</span>
                     <span class="summary-notice-count" id="economicEventCount">0</span>
@@ -1631,12 +1635,20 @@
                     <div class="value" id="scenarioHomeGrowth">0%</div>
                   </div>
                   <div class="scenario-summary-item">
-                    <div class="label">Person 1 retirement / death age</div>
+                    <div class="label">Person 1 retirement age</div>
                     <div class="value" id="scenarioP1RetAge">0y 0m</div>
                   </div>
                   <div class="scenario-summary-item">
-                    <div class="label">Person 2 retirement / death age</div>
+                    <div class="label">Person 1 age at death</div>
+                    <div class="value" id="scenarioP1DeathAge">0y 0m</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Person 2 retirement age</div>
                     <div class="value" id="scenarioP2RetAge">N/A</div>
+                  </div>
+                  <div class="scenario-summary-item">
+                    <div class="label">Person 2 age at death</div>
+                    <div class="value" id="scenarioP2DeathAge">N/A</div>
                   </div>
                 </div>
               </div>
