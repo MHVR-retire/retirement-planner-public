@@ -625,17 +625,16 @@ link.download = safeScenarioName
     const eventsIgnored = selected("useEconomicEvents") === "ignore";
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
-    if (incomeCount) incomeCount.textContent = (incomeAdjustmentsIgnored ? "Ignore" : "Use") + " · " + incomeAdjustments.length;
+    if (incomeCount) incomeCount.textContent = incomeAdjustmentsIgnored ? "Ignored" : String(incomeAdjustments.length);
     if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
-    if (lumpCount) lumpCount.textContent = (lumpSumsIgnored ? "Ignore" : "Use") + " · " + lumpSums.length;
+    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignored" : String(lumpSums.length);
 
     if (incomeBadge) {
       incomeBadge.classList.toggle("is-empty", incomeAdjustments.length === 0 || incomeAdjustmentsIgnored);
       incomeBadge.title = incomeAdjustmentsIgnored
-        ? ("Income Adjustment is ignored. " + incomeAdjustments.length + " entered. Click to review the Income Requirement Adjustments section.")
-        : (incomeAdjustments.length
-            ? ("Income Adjustment is in use. " + incomeAdjustments.length + " entered.\n" + incomeAdjustments.join("\n"))
-            : "Income Adjustment is in use. No income adjustments entered. Click to review the Income Requirement Adjustments section.");
+        ? "Income adjustments are currently ignored. Click to review the Income Requirement Adjustments section."
+        : (incomeAdjustments.length ? incomeAdjustments.join("
+") : "No income adjustments selected. Click to review the Income Requirement Adjustments section.");
     }
 
     if (eventBadge) {
@@ -646,10 +645,9 @@ link.download = safeScenarioName
     if (lumpBadge) {
       lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
       lumpBadge.title = lumpSumsIgnored
-        ? ("Lump Sum Adjustment is ignored. " + lumpSums.length + " entered. Click to review the Lump Sum section.")
-        : (lumpSums.length
-            ? ("Lump Sum Adjustment is in use. " + lumpSums.length + " entered.\n" + lumpSums.join("\n"))
-            : "Lump Sum Adjustment is in use. No lump sums entered. Click to review the Lump Sum section.");
+        ? "Lump sum adjustments are currently ignored. Click to review the Lump Sum section."
+        : (lumpSums.length ? lumpSums.join("
+") : "No lump sums selected. Click to review the Lump Sum section.");
     }
 
     const surplusInvested = selected("surplusHandling") === "save";
