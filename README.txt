@@ -34,3 +34,8 @@ Update: Lump sum available balances are returned by the private server. Removals
 
 
 Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.
+
+V3.6 Monthly Calculation Engine
+- Projection engine evaluates retirement status, contributions, investment returns, income, withdrawals, lump sums, economic events and home transactions month by month.
+- Investment-at-retirement values are captured at the exact selected retirement month.
+- Projection reporting shows a Current period, then the exact first Retirement month, then annual periods anchored from that retirement month.
