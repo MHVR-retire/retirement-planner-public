@@ -34,3 +34,8 @@ Update: Lump sum available balances are returned by the private server. Removals
 
 
 Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.
+
+V3.5 exact retirement-month investment fix:
+- P1/P2 investment-at-retirement summary is now calculated at the exact selected retirement month rather than the next annual projection row.
+- Pre-retirement RRSP/TFSA contributions and investment growth used for this summary continue only through the exact months before retirement.
+- Economic-event returns and pre-retirement lump-sum transactions are included in the exact retirement-month summary calculation.
