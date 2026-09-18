@@ -39,3 +39,7 @@ V3.6 Monthly Calculation Engine
 - Projection engine evaluates retirement status, contributions, investment returns, income, withdrawals, lump sums, economic events and home transactions month by month.
 - Investment-at-retirement values are captured at the exact selected retirement month.
 - Projection reporting shows a Current period, then the exact first Retirement month, then annual periods anchored from that retirement month.
+
+V3.6.1 fixes:
+- Restored Spend surplus vs Save surplus sensitivity scenarios.
+- Hardened Lump Sum 5 UI recalculation and verified private monthly engine processes slot 5.

@@ -912,6 +912,20 @@ link.download = safeScenarioName
       });
     });
 
+
+    // V3.6.1 regression guard: ensure Lump Sum 5 always triggers recalculation.
+    ["lumpSum5Type", "lumpSum5Person", "lumpSum5Age", "lumpSum5AgeMonth", "lumpSum5Account", "lumpSum5Amount"].forEach(id => {
+      const control = document.getElementById(id);
+      if (control && !control.dataset.lumpSum5Bound) {
+        control.dataset.lumpSum5Bound = "1";
+        control.addEventListener("change", () => {
+          updateActiveInputNotices();
+          calculate();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
+        });
+      }
+    });
+
     document.querySelectorAll("input[type='text']").forEach(el => {
       el.addEventListener("input", () => {
         updateActiveInputNotices();
