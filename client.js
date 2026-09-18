@@ -912,6 +912,20 @@ link.download = safeScenarioName
       });
     });
 
+
+    // V3.6.1 regression guard: ensure Lump Sum 5 always triggers recalculation.
+    ["lumpSum5Type", "lumpSum5Person", "lumpSum5Age", "lumpSum5AgeMonth", "lumpSum5Account", "lumpSum5Amount"].forEach(id => {
+      const control = document.getElementById(id);
+      if (control && !control.dataset.lumpSum5Bound) {
+        control.dataset.lumpSum5Bound = "1";
+        control.addEventListener("change", () => {
+          updateActiveInputNotices();
+          calculate();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
+        });
+      }
+    });
+
     document.querySelectorAll("input[type='text']").forEach(el => {
       el.addEventListener("input", () => {
         updateActiveInputNotices();
@@ -1179,14 +1193,10 @@ link.download = safeScenarioName
 
 
   function personInvestmentAtRetirement(rows, personKey) {
-    const exactKey = personKey === "p1"
-      ? "p1InvestmentAtRetirementExact"
-      : "p2InvestmentAtRetirementExact";
-
-    const exactRow = rows.find(item => Number.isFinite(Number(item[exactKey])));
+    const exactKey = personKey === "p1" ? "p1InvestmentAtRetirement" : "p2InvestmentAtRetirement";
+    const exactRow = (rows || []).find(item => item[exactKey] !== null && item[exactKey] !== undefined && Number.isFinite(Number(item[exactKey])));
     if (exactRow) return Number(exactRow[exactKey]) || 0;
 
-    // Backward-compatible fallback for older API responses.
     const retirementAgeMonths = personKey === "p1"
       ? ageInTotalMonths("p1RetirementAge", "p1RetirementAgeMonth")
       : ageInTotalMonths("p2RetirementAge", "p2RetirementAgeMonth");
@@ -1197,18 +1207,11 @@ link.download = safeScenarioName
     });
 
     if (!row) return 0;
-
     if (personKey === "p1") {
-      return (row.endingP1RRSP || 0) +
-        (row.endingP1TFSA || 0) +
-        (row.endingP1NonRegistered || 0);
+      return (row.endingP1RRSP || 0) + (row.endingP1TFSA || 0) + (row.endingP1NonRegistered || 0);
     }
-
-    return (row.endingP2RRSP || 0) +
-      (row.endingP2TFSA || 0) +
-      (row.endingP2NonRegistered || 0);
+    return (row.endingP2RRSP || 0) + (row.endingP2TFSA || 0) + (row.endingP2NonRegistered || 0);
   }
-
 
 
   function rowDisplayTotalIncome(row, divisor) {
@@ -1310,12 +1313,12 @@ link.download = safeScenarioName
 
     const p1MetricCard = document.getElementById("metricRRSP")?.closest(".metric");
     if (p1MetricCard) {
-      p1MetricCard.title = "Total projected Person 1 investments at the exact selected retirement month: RRSP/RRIF, TFSA, and non-registered.";
+      p1MetricCard.title = "Total projected Person 1 investments in the year Person 1 retires: RRSP/RRIF, TFSA, and non-registered.";
     }
 
     const p2MetricCard = document.getElementById("metricTFSA")?.closest(".metric");
     if (p2MetricCard) {
-      p2MetricCard.title = "Total projected Person 2 investments at the exact selected retirement month: RRSP/RRIF, TFSA, and non-registered.";
+      p2MetricCard.title = "Total projected Person 2 investments in the year Person 2 retires: RRSP/RRIF, TFSA, and non-registered.";
     }
     document.getElementById("metricRemaining").textContent = formatMoney((last.remainingRRSP || 0) + (last.remainingTFSA || 0) + (last.remainingNonRegistered || 0) + (last.surplusSavingsBalance || 0));
 
@@ -1505,7 +1508,7 @@ link.download = safeScenarioName
 
     incomeChart = new Chart(ctx, {
       data: {
-        labels: rows.map(row => "Year " + row.year + " (" + row.ageLabel + ")"),
+        labels: rows.map(row => (row.periodLabel || ("Year " + row.year)) + " (" + row.ageLabel + ")"),
         datasets: [
           {
             type: "bar",
@@ -1701,7 +1704,7 @@ link.download = safeScenarioName
     balanceChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: rows.map(row => "Year " + row.year + " (" + row.ageLabel + ")"),
+        labels: rows.map(row => (row.periodLabel || ("Year " + row.year)) + " (" + row.ageLabel + ")"),
         datasets: [
           {
             label: "Person 1 RRSP/RRIF balance",
@@ -1830,7 +1833,7 @@ link.download = safeScenarioName
 
       const householdRow = document.createElement("tr");
       householdRow.innerHTML = `
-        <td>${row.year}</td>
+        <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
         <td>${row.ageLabel}</td>
         <td>${row.aliveLabel}</td>
         <td>${formatMoney((row.targetAnnual || 0) / divisor)}</td>
@@ -1853,7 +1856,7 @@ link.download = safeScenarioName
 
       const p1Row = document.createElement("tr");
       p1Row.innerHTML = `
-        <td>${row.year}</td>
+        <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
         <td>${p1Age}</td>
         <td>${formatMoney((row.p1_cpp || 0) / divisor)}</td>
         <td>${formatMoney((row.p1_oas || 0) / divisor)}</td>
@@ -1877,7 +1880,7 @@ link.download = safeScenarioName
       if (p2Body && isCoupleModeForDisplay()) {
         const p2Row = document.createElement("tr");
         p2Row.innerHTML = `
-          <td>${row.year}</td>
+          <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
           <td>${p2Age}</td>
           <td>${formatMoney((row.p2_cpp || 0) / divisor)}</td>
           <td>${formatMoney((row.p2_oas || 0) / divisor)}</td>

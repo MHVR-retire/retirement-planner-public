@@ -35,7 +35,11 @@ Update: Lump sum available balances are returned by the private server. Removals
 
 Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.
 
-V3.5 exact retirement-month investment fix:
-- P1/P2 investment-at-retirement summary is now calculated at the exact selected retirement month rather than the next annual projection row.
-- Pre-retirement RRSP/TFSA contributions and investment growth used for this summary continue only through the exact months before retirement.
-- Economic-event returns and pre-retirement lump-sum transactions are included in the exact retirement-month summary calculation.
+V3.6 Monthly Calculation Engine
+- Projection engine evaluates retirement status, contributions, investment returns, income, withdrawals, lump sums, economic events and home transactions month by month.
+- Investment-at-retirement values are captured at the exact selected retirement month.
+- Projection reporting shows a Current period, then the exact first Retirement month, then annual periods anchored from that retirement month.
+
+V3.6.1 fixes:
+- Restored Spend surplus vs Save surplus sensitivity scenarios.
+- Hardened Lump Sum 5 UI recalculation and verified private monthly engine processes slot 5.

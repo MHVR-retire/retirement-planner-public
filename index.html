@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Canadian Retirement Income Calculator - V2.0 Protected</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3.6.1" />
 </head>
 <body>
 <div id="legalModal" class="legal-modal">
@@ -1292,7 +1292,7 @@
             <summary>V3.0 Sensitivity scenarios</summary>
             <div class="section-content">
               <p class="disclaimer">
-                Each sensitivity scenario is calculated independently from the current base case. Scenario changes are not combined with one another. Results show the funding ratio and final investment savings for each case.
+                Each sensitivity scenario is calculated independently from the current base case. Scenario changes are not combined with one another. Results show the funding ratio and final investment savings for each case. V3.6.1 also compares spending retirement income surplus with saving the surplus in the GIC account.
               </p>
 
               <div class="person-card">
@@ -1689,7 +1689,7 @@
               <div class="chart-title">
                 <div>
                   <h3>Projection tables</h3>
-                  <p>All projection years are shown. Use the collapse/expand controls to open the household, Person 1, and Person 2 tables as needed. Each table scrolls within a 420px area. Funding ratio equals covered income plus ending savings divided by total required income. Annual surplus is not counted beyond that year's target unless it remains as final savings.</p>
+                  <p>Projection periods are anchored to the exact first retirement month and then progress annually from that point. Use the collapse/expand controls to open the household, Person 1, and Person 2 tables as needed. Each table scrolls within a 420px area. Funding ratio equals covered income plus ending savings divided by total required income. Annual surplus is not counted beyond that year's target unless it remains as final savings.</p>
                 </div>
               </div>
 
@@ -1699,7 +1699,7 @@
                   <table>
                     <thead>
                     <tr>
-                      <th>Year</th>
+                      <th>Period</th>
                       <th>Ages</th>
                       <th>Alive</th>
                       <th>Target income</th>
@@ -1728,7 +1728,7 @@
                 <table>
                   <thead>
                     <tr>
-                      <th>Year</th>
+                      <th>Period</th>
                       <th>Age</th>
                       <th>CPP</th>
                       <th>OAS</th>
@@ -1758,7 +1758,7 @@
                   <table>
                     <thead>
                       <tr>
-                        <th>Year</th>
+                        <th>Period</th>
                         <th>Age</th>
                         <th>CPP</th>
                         <th>OAS</th>
@@ -1839,6 +1839,6 @@ style="width:100%; border-radius:12px;">
   </main>
 
 
-<script src="client.js"></script>
+<script src="client.js?v=3.6.1"></script>
 </body>
 </html>
