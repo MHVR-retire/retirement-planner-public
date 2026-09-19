@@ -34,3 +34,17 @@ Update: Lump sum available balances are returned by the private server. Removals
 
 
 Update: Added Use / Ignore controls for income adjustments, lump sums, and economic events.
+
+V3.6 Monthly Calculation Engine
+- Projection engine evaluates retirement status, contributions, investment returns, income, withdrawals, lump sums, economic events and home transactions month by month.
+- Investment-at-retirement values are captured at the exact selected retirement month.
+- Projection reporting shows a Current period, then the exact first Retirement month, then annual periods anchored from that retirement month.
+
+V3.6.1 fixes:
+- Restored Spend surplus vs Save surplus sensitivity scenarios.
+- Hardened Lump Sum 5 UI recalculation and verified private monthly engine processes slot 5.
+
+V3.6.2 updates:
+- Age at death is selected by year only and occurs at the start of that age year.
+- Projection reporting shows Current, exact Retirement, then whole-age-year rows (Age 64, Age 65, etc.).
+- Monthly calculation engine remains unchanged in granularity; only reporting boundaries are simplified.
