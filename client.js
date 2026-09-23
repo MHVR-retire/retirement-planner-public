@@ -1,6 +1,8 @@
 
   let incomeChart;
   let balanceChart;
+  let lastProjectionRows = [];
+  let lastSensitivityResults = [];
 
   // Paste your private Render server URL here after deployment.
   // Example: const API_BASE_URL = "https://your-render-service-name.onrender.com";
@@ -74,7 +76,25 @@
     returnRate: 5,
     postRetirementReturnRate: 4,
     investmentManagementFee: 1,
+    surplusHandling: "spend",
+    surplusSavingsReturn: 3,
     inflationRate: 2,
+    sensitivityRetirement1Person: "p1",
+    sensitivityRetirement1Years: -2,
+    sensitivityRetirement2Person: "p1",
+    sensitivityRetirement2Years: 2,
+    sensitivityLife1Person: "p1",
+    sensitivityLife1Years: 5,
+    sensitivityLife2Person: "p1",
+    sensitivityLife2Years: -5,
+    sensitivityInvestment1: -1,
+    sensitivityInvestment2: 1,
+    sensitivityInflation1: 1,
+    sensitivityInflation2: -1,
+    sensitivityAfterTaxIncome1: -10000,
+    sensitivityAfterTaxIncome2: 10000,
+    sensitivityEconomicImpact1: -20,
+    sensitivityEconomicImpact2: -10,
     economicEvent1Person: "none", economicEvent1StartAge: 65, economicEvent1StartAgeMonth: 0, economicEvent1DurationMonths: 12, economicEvent1ReturnRate: -10, economicEvent1InflationRate: 4, economicEvent1Description: "",
     economicEvent2Person: "none", economicEvent2StartAge: 65, economicEvent2StartAgeMonth: 0, economicEvent2DurationMonths: 12, economicEvent2ReturnRate: 8, economicEvent2InflationRate: 2, economicEvent2Description: "",
     economicEvent3Person: "none", economicEvent3StartAge: 65, economicEvent3StartAgeMonth: 0, economicEvent3DurationMonths: 12, economicEvent3ReturnRate: 5, economicEvent3InflationRate: 2, economicEvent3Description: "",
@@ -86,6 +106,8 @@
     adjustment3Description: "",
     adjustment4Description: "",
     adjustment5Description: "",
+    adjustment6Description: "",
+    adjustment7Description: "",
     adjustment1Person: "none",
     adjustment1Age: 65,
     adjustment1AgeMonth: 0,
@@ -116,6 +138,18 @@
     adjustment5Direction: "increase",
     adjustment5Amount: 0,
     adjustment5Frequency: "monthly",
+    adjustment6Person: "none",
+    adjustment6Age: 65,
+    adjustment6AgeMonth: 0,
+    adjustment6Direction: "increase",
+    adjustment6Amount: 0,
+    adjustment6Frequency: "monthly",
+    adjustment7Person: "none",
+    adjustment7Age: 65,
+    adjustment7AgeMonth: 0,
+    adjustment7Direction: "increase",
+    adjustment7Amount: 0,
+    adjustment7Frequency: "monthly",
     homeCurrentValue: 0,
     homeGrowthRate: 3,
     sellHomeOption: "no",
@@ -159,6 +193,20 @@
     lumpSum5AgeMonth: 0,
     lumpSum5Account: "rrsp",
     lumpSum5Amount: 0,
+    lumpSum6Description: "",
+    lumpSum6Type: "remove",
+    lumpSum6Person: "none",
+    lumpSum6Age: 65,
+    lumpSum6AgeMonth: 0,
+    lumpSum6Account: "rrsp",
+    lumpSum6Amount: 0,
+    lumpSum7Description: "",
+    lumpSum7Type: "remove",
+    lumpSum7Person: "none",
+    lumpSum7Age: 65,
+    lumpSum7AgeMonth: 0,
+    lumpSum7Account: "rrsp",
+    lumpSum7Amount: 0,
   };
 
   function isCoupleModeForDisplay() {
@@ -472,7 +520,119 @@ link.download = safeScenarioName
     link.click();
     link.remove();
 
-    URL.revokeObjectURL(url);
+    // Safari/iPhone may still be consuming the Blob URL after click.
+    // Delay revocation so the JSON continues to download into the browser's Files/Downloads location.
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+
+  function csvEscape(value) {
+    if (value === null || value === undefined) return "";
+    const text = String(value);
+    return /[",\n\r]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
+  }
+
+  function downloadCsv(filename, rows) {
+    const csv = rows.map(row => row.map(csvEscape).join(",")).join("\r\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  function exportBaseFileName(suffix) {
+    const date = new Date().toISOString().slice(0, 10);
+    const scenarioName = document.getElementById("scenarioName")?.value || "";
+    const safeScenarioName = scenarioName.trim().replace(/[^a-z0-9-_ ]/gi, "").replace(/\s+/g, "-").toLowerCase();
+    return (safeScenarioName || "retirement-planner-scenario") + "-" + date + "-" + suffix + ".csv";
+  }
+
+  function exportProjectionCsv() {
+    const rows = lastProjectionRows || [];
+    if (!rows.length) {
+      alert("No projection results are available yet.");
+      return;
+    }
+
+    const out = [[
+      "Period","Ages","Alive","Period months","Target income","Baseline target","Total income","Surplus / shortfall",
+      "Requirement change","Adjustment description","Lump sum net change","Lump sum purpose","Lump sum shortfall",
+      "CPP","OAS","DB pension","Other income","Employment income","RRIF minimum withdrawal","Additional RRSP/RRIF withdrawal",
+      "TFSA withdrawal","Non-registered withdrawal","Surplus savings withdrawal","Opening combined RRSP/RRIF","Ending combined RRSP/RRIF",
+      "Ending TFSA","Ending non-registered","Surplus saved","Surplus / GIC balance","P1 taxable income","P1 avg tax rate",
+      "P1 opening RRSP/RRIF","P1 ending RRSP/RRIF","P1 ending TFSA","P1 ending non-reg","P2 taxable income","P2 avg tax rate",
+      "P2 opening RRSP/RRIF","P2 ending RRSP/RRIF","P2 ending TFSA","P2 ending non-reg"
+    ]];
+
+    rows.forEach(row => {
+      const totalIncome =
+        (row.rrspWithdrawal || 0) + (row.rrifMinimumWithdrawal || 0) + (row.tfsaWithdrawal || 0) +
+        (row.nonRegisteredWithdrawal || 0) + (row.surplusSavingsWithdrawal || 0) + (row.cpp || 0) +
+        (row.oas || 0) + (row.dbPension || 0) + (row.other || 0) + (row.employment || 0);
+      out.push([
+        row.periodLabel || row.year || "", row.ageLabel || "", row.aliveLabel || "", row.periodMonths || "",
+        row.targetAnnual || 0, row.baselineTargetAnnual || 0, totalIncome, totalIncome - (row.targetAnnual || 0),
+        row.customRequirementAdjustment || 0, row.activeAdjustmentDescriptions || "", row.lumpSumNetChange || 0,
+        row.lumpSumDescription || "", row.lumpSumShortfall || 0, row.cpp || 0, row.oas || 0, row.dbPension || 0,
+        row.other || 0, row.employment || 0, row.rrifMinimumWithdrawal || 0,
+        (row.p1AdditionalRRSPWithdrawal || 0) + (row.p2AdditionalRRSPWithdrawal || 0), row.tfsaWithdrawal || 0,
+        row.nonRegisteredWithdrawal || 0, row.surplusSavingsWithdrawal || 0, row.openingRRSP || 0,
+        row.endingRRSP || row.remainingRRSP || 0, row.remainingTFSA || 0, row.remainingNonRegistered || 0,
+        row.surplusSavingsReinvested || 0, row.surplusSavingsBalance || 0, row.p1TaxableIncome || 0,
+        row.p1AverageTaxRate || 0, row.openingP1RRSP || 0, row.endingP1RRSP || 0, row.endingP1TFSA || 0,
+        row.endingP1NonRegistered || 0, row.p2TaxableIncome || 0, row.p2AverageTaxRate || 0,
+        row.openingP2RRSP || 0, row.endingP2RRSP || 0, row.endingP2TFSA || 0, row.endingP2NonRegistered || 0
+      ]);
+    });
+
+    downloadCsv(exportBaseFileName("projection"), out);
+  }
+
+  function exportSummaryCsv() {
+    const out = [["Section","Item","Value","Details"]];
+    const summaryFields = [
+      ["Scenario","Desired annual income pre-tax","scenarioDesiredPreTax"],
+      ["Scenario","Actual monthly income after-tax","scenarioActualAfterTax"],
+      ["Scenario","Pre-retirement return","scenarioPreReturn"],
+      ["Scenario","Post-retirement return","scenarioPostReturn"],
+      ["Scenario","Inflation rate","scenarioInflation"],
+      ["Scenario","Home growth rate","scenarioHomeGrowth"],
+      ["Scenario","Person 1 retirement age","scenarioP1RetAge"],
+      ["Scenario","Person 1 age at death","scenarioP1DeathAge"],
+      ["Scenario","Person 2 retirement age","scenarioP2RetAge"],
+      ["Scenario","Person 2 age at death","scenarioP2DeathAge"],
+      ["Summary","P1 investments at retirement","metricRRSP"],
+      ["Summary","P2 investments at retirement","metricTFSA"],
+      ["Summary","Target income","metricTarget"],
+      ["Summary","Final savings","metricRemaining"],
+      ["Summary","Funding ratio","metricGoalPercent"],
+      ["Summary","Home value","metricHomeValue"]
+    ];
+    summaryFields.forEach(([section, item, id]) => {
+      out.push([section, item, document.getElementById(id)?.textContent?.trim() || "", ""]);
+    });
+
+    out.push([]);
+    out.push(["Sensitivity","Scenario","Funding ratio","Final savings / depletion"]);
+    if (lastSensitivityResults.length) {
+      lastSensitivityResults.forEach(item => {
+        out.push([
+          "Sensitivity",
+          item.name || "",
+          item.error ? "N/A" : Number(item.fundingRatio || 0).toFixed(2) + "%",
+          item.error ? (item.error || "Error") : ((item.finalSavings || 0) + " | Depleted age: " + (item.fundsDepletedAge || "—") + " | " + (item.description || ""))
+        ]);
+      });
+    } else {
+      out.push(["Sensitivity","Not run","","Run sensitivity analysis first to export its results."]);
+    }
+
+    downloadCsv(exportBaseFileName("summary"), out);
   }
 
   function importInputsFromFile(file) {
@@ -546,9 +706,31 @@ link.download = safeScenarioName
     return events;
   }
 
+  function getActiveIncomeAdjustments() {
+    const adjustments = [];
+    for (let i = 1; i <= 7; i++) {
+      const person = selected("adjustment" + i + "Person");
+      const amount = value("adjustment" + i + "Amount");
+      if (person === "none" || amount <= 0) continue;
+
+      const description = document.getElementById("adjustment" + i + "Description")?.value.trim();
+      const direction = selected("adjustment" + i + "Direction") === "decrease" ? "Decrease" : "Increase";
+      const frequency = selected("adjustment" + i + "Frequency") === "monthly" ? "monthly" : "annual";
+      const age = value("adjustment" + i + "Age");
+      const month = value("adjustment" + i + "AgeMonth");
+
+      adjustments.push(
+        (description || "Income adjustment " + i) +
+        ": " + direction.toLowerCase() + " " + formatMoney(amount) +
+        " " + frequency + " at age " + age + "y " + month + "m"
+      );
+    }
+    return adjustments;
+  }
+
   function getActiveLumpSums() {
     const lumpSums = [];
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       const person = selected("lumpSum" + i + "Person");
       const amount = value("lumpSum" + i + "Amount");
       if (person === "none" || amount <= 0) continue;
@@ -568,19 +750,33 @@ link.download = safeScenarioName
   }
 
   function updateActiveInputNotices() {
+    const incomeAdjustments = getActiveIncomeAdjustments();
     const events = getActiveEconomicEvents();
     const lumpSums = getActiveLumpSums();
 
+    const incomeBadge = document.getElementById("incomeAdjustmentCountBadge");
+    const incomeCount = document.getElementById("incomeAdjustmentCount");
     const eventBadge = document.getElementById("economicEventCountBadge");
     const eventCount = document.getElementById("economicEventCount");
     const lumpBadge = document.getElementById("lumpSumCountBadge");
     const lumpCount = document.getElementById("lumpSumCount");
+    const surplusBadge = document.getElementById("surplusHandlingBadge");
+    const surplusLabel = document.getElementById("surplusHandlingLabel");
 
+    const incomeAdjustmentsIgnored = selected("useIncomeAdjustments") === "ignore";
     const eventsIgnored = selected("useEconomicEvents") === "ignore";
     const lumpSumsIgnored = selected("useLumpSums") === "ignore";
 
-    if (eventCount) eventCount.textContent = eventsIgnored ? "Ignored" : String(events.length);
-    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignored" : String(lumpSums.length);
+    if (incomeCount) incomeCount.textContent = incomeAdjustmentsIgnored ? "Ignore" : String(incomeAdjustments.length);
+    if (eventCount) eventCount.textContent = eventsIgnored ? "Ignore" : String(events.length);
+    if (lumpCount) lumpCount.textContent = lumpSumsIgnored ? "Ignore" : String(lumpSums.length);
+
+    if (incomeBadge) {
+      incomeBadge.classList.toggle("is-empty", incomeAdjustments.length === 0 || incomeAdjustmentsIgnored);
+      incomeBadge.title = incomeAdjustmentsIgnored
+        ? "Income adjustments are currently ignored. Click to review the Income Requirement Adjustments section."
+        : (incomeAdjustments.length ? incomeAdjustments.join("\n") : "No income adjustments selected. Click to review the Income Requirement Adjustments section.");
+    }
 
     if (eventBadge) {
       eventBadge.classList.toggle("is-empty", events.length === 0 || eventsIgnored);
@@ -591,6 +787,16 @@ link.download = safeScenarioName
       lumpBadge.classList.toggle("is-empty", lumpSums.length === 0 || lumpSumsIgnored);
       lumpBadge.title = lumpSumsIgnored ? "Lump sums are currently ignored. Click to review the Lump Sum section." : (lumpSums.length ? lumpSums.join("\n") : "No lump sums entered. Click to review the Lump Sum section.");
     }
+
+    const surplusInvested = selected("surplusHandling") === "save";
+    if (surplusLabel) surplusLabel.textContent = surplusInvested ? "Surplus Invested" : "Surplus Spent";
+    if (surplusBadge) {
+      surplusBadge.classList.toggle("invested", surplusInvested);
+      surplusBadge.classList.toggle("spent", !surplusInvested);
+      surplusBadge.title = surplusInvested
+        ? "After-tax retirement income surplus is saved in the surplus savings / GIC account. Click to review Rates and Assumptions."
+        : "Retirement income surplus is treated as spent and leaves the investment model. Click to review Rates and Assumptions.";
+    }
   }
 
   function openInputSection(sectionId) {
@@ -598,6 +804,157 @@ link.download = safeScenarioName
     if (!section) return;
     section.open = true;
     section.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+
+  function populateSignedYears(id, start, end, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end; amount++) {
+      const option = document.createElement("option");
+      option.value = amount;
+      option.textContent = (amount > 0 ? "+" : "") + amount + (Math.abs(amount) === 1 ? " year" : " years");
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+
+
+  function populateEconomicImpactSensitivity(id, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const impacts = [-30, -25, -20, -15, -10, -5];
+    element.innerHTML = "";
+    impacts.forEach(impact => {
+      const option = document.createElement("option");
+      option.value = impact;
+      option.textContent = impact + "%";
+      element.appendChild(option);
+    });
+    element.value = selectedValue;
+  }
+
+  function populateSignedSensitivityCurrency(id, start, end, step, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end; amount += step) {
+      const option = document.createElement("option");
+      option.value = amount;
+      const sign = amount > 0 ? "+" : amount < 0 ? "-" : "";
+      option.textContent = sign + "$" + Math.abs(amount).toLocaleString("en-CA", { maximumFractionDigits: 0 });
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+  function populateSignedSensitivityPercent(id, start, end, step, selectedValue) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    element.innerHTML = "";
+    for (let amount = start; amount <= end + 0.0001; amount += step) {
+      const rounded = Math.round(amount * 100) / 100;
+      const option = document.createElement("option");
+      option.value = rounded;
+      option.textContent = (rounded > 0 ? "+" : "") + rounded.toFixed(2) + "%";
+      element.appendChild(option);
+    }
+    element.value = selectedValue;
+  }
+
+  function sensitivityScenarioPayload() {
+    return {
+      retirementChanges: [
+        {
+          person: selected("sensitivityRetirement1Person"),
+          years: value("sensitivityRetirement1Years")
+        },
+        {
+          person: selected("sensitivityRetirement2Person"),
+          years: value("sensitivityRetirement2Years")
+        }
+      ],
+      lifeExpectancyChanges: [
+        {
+          person: selected("sensitivityLife1Person"),
+          years: value("sensitivityLife1Years")
+        },
+        {
+          person: selected("sensitivityLife2Person"),
+          years: value("sensitivityLife2Years")
+        }
+      ],
+      investmentChanges: [
+        value("sensitivityInvestment1"),
+        value("sensitivityInvestment2")
+      ],
+      inflationChanges: [
+        value("sensitivityInflation1"),
+        value("sensitivityInflation2")
+      ],
+      afterTaxIncomeChanges: [
+        value("sensitivityAfterTaxIncome1"),
+        value("sensitivityAfterTaxIncome2")
+      ],
+      economicImpactChanges: [
+        value("sensitivityEconomicImpact1"),
+        value("sensitivityEconomicImpact2")
+      ]
+    };
+  }
+
+  async function runSensitivityAnalysis() {
+    const status = document.getElementById("sensitivityStatus");
+    const body = document.getElementById("sensitivityResultsBody");
+    if (!body) return;
+
+    if (status) {
+      status.className = "sensitivity-status";
+      status.textContent = "Running independent scenarios securely...";
+    }
+
+    try {
+      const response = await fetch(API_BASE_URL + "/api/sensitivity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          baseInputs: collectPlannerInputs().values,
+          scenarios: sensitivityScenarioPayload()
+        })
+      });
+
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(result.error || "Sensitivity analysis could not be completed.");
+      }
+
+      lastSensitivityResults = result.results || [];
+      body.innerHTML = "";
+      lastSensitivityResults.forEach(item => {
+        const row = document.createElement("tr");
+        const fundingRatio = Number(item.fundingRatio || 0);
+        const fundingText = item.error ? "N/A" : fundingRatio.toFixed(0) + "%";
+        const savingsText = item.error ? "N/A" : formatMoney(item.finalSavings || 0);
+        const fundsDepletedText = item.error ? "—" : (item.fundsDepletedAge || "—");
+        row.innerHTML =
+          "<td>" + escapeHtml(item.name || "") + "</td>" +
+          "<td>" + escapeHtml(item.description || "") + (item.error ? "<br><small>" + escapeHtml(item.error) + "</small>" : "") + "</td>" +
+          "<td>" + fundingText + "</td>" +
+          "<td>" + savingsText + "</td>" +
+          "<td>" + escapeHtml(fundsDepletedText) + "</td>";
+        body.appendChild(row);
+      });
+
+      if (status) status.textContent = "Sensitivity analysis complete. Each row is compared independently with the base case.";
+      document.getElementById("sensitivityOutputPanel")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      if (status) {
+        status.className = "sensitivity-status error";
+        status.textContent = error.message || "Sensitivity analysis failed.";
+      }
+    }
   }
 
   function initialize() {
@@ -608,9 +965,9 @@ link.download = safeScenarioName
     ["p1OASStartAge", "p2OASStartAge"].forEach(id => populateAge(id, 65, 70, defaults[id]));
 
     [
-      "p1CurrentAgeMonth", "p1RetirementAgeMonth", "p1LifeExpectancyMonth", "p1RRIFConversionAgeMonth",
+      "p1CurrentAgeMonth", "p1RetirementAgeMonth", "p1RRIFConversionAgeMonth",
       "p1CPPStartAgeMonth", "p1OASStartAgeMonth", "p1OtherStartAgeMonth", "p1OtherEndAgeMonth",
-      "p2CurrentAgeMonth", "p2RetirementAgeMonth", "p2LifeExpectancyMonth", "p2RRIFConversionAgeMonth",
+      "p2CurrentAgeMonth", "p2RetirementAgeMonth", "p2RRIFConversionAgeMonth",
       "p2CPPStartAgeMonth", "p2OASStartAgeMonth", "p2OtherStartAgeMonth", "p2OtherEndAgeMonth"
     ].forEach(id => populateMonth(id, defaults[id] || 0));
 
@@ -639,12 +996,12 @@ link.download = safeScenarioName
     populateMonth("homeSaleAgeMonth", defaults.homeSaleAgeMonth || 0);
 
 
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       populateAge("adjustment" + i + "Age", 18, 105, defaults["adjustment" + i + "Age"]);
       populateMonth("adjustment" + i + "AgeMonth", defaults["adjustment" + i + "AgeMonth"] || 0);
       populateCurrency("adjustment" + i + "Amount", 0, 20000, 250);
     }
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       populateAge("lumpSum" + i + "Age", 18, 105, defaults["lumpSum" + i + "Age"]);
       populateMonth("lumpSum" + i + "AgeMonth", defaults["lumpSum" + i + "AgeMonth"] || 0);
       populateCurrency("lumpSum" + i + "Amount", 0, 500000, 5000);
@@ -661,7 +1018,20 @@ link.download = safeScenarioName
     populatePercent("returnRate", 0, 10, 0.1, defaults.returnRate);
     populatePercent("postRetirementReturnRate", 0, 10, 0.1, defaults.postRetirementReturnRate);
     populatePercent("investmentManagementFee", 0.25, 2, 0.25, defaults.investmentManagementFee);
+    populatePercent("surplusSavingsReturn", 0, 5, 0.25, defaults.surplusSavingsReturn);
     populatePercent("inflationRate", 0, 6, 0.1, defaults.inflationRate);
+    populateSignedYears("sensitivityRetirement1Years", -10, 10, defaults.sensitivityRetirement1Years);
+    populateSignedYears("sensitivityRetirement2Years", -10, 10, defaults.sensitivityRetirement2Years);
+    populateSignedYears("sensitivityLife1Years", -15, 15, defaults.sensitivityLife1Years);
+    populateSignedYears("sensitivityLife2Years", -15, 15, defaults.sensitivityLife2Years);
+    populateSignedSensitivityPercent("sensitivityInvestment1", -5, 5, 0.25, defaults.sensitivityInvestment1);
+    populateSignedSensitivityPercent("sensitivityInvestment2", -5, 5, 0.25, defaults.sensitivityInvestment2);
+    populateSignedSensitivityPercent("sensitivityInflation1", -3, 5, 0.25, defaults.sensitivityInflation1);
+    populateSignedSensitivityPercent("sensitivityInflation2", -3, 5, 0.25, defaults.sensitivityInflation2);
+    populateSignedSensitivityCurrency("sensitivityAfterTaxIncome1", -30000, 30000, 2000, defaults.sensitivityAfterTaxIncome1);
+    populateSignedSensitivityCurrency("sensitivityAfterTaxIncome2", -30000, 30000, 2000, defaults.sensitivityAfterTaxIncome2);
+    populateEconomicImpactSensitivity("sensitivityEconomicImpact1", defaults.sensitivityEconomicImpact1);
+    populateEconomicImpactSensitivity("sensitivityEconomicImpact2", defaults.sensitivityEconomicImpact2);
 
     setDefaults();
 
@@ -675,6 +1045,10 @@ link.download = safeScenarioName
     }
 
     document.getElementById("calculateBtn").addEventListener("click", calculate);
+    document.getElementById("runSensitivityBtn")?.addEventListener("click", runSensitivityAnalysis);
+    document.getElementById("runFundingRatioSolverBtn")?.addEventListener("click", runFundingRatioSolver);
+    document.getElementById("applyFundingRatioSolverBtn")?.addEventListener("click", applyFundingRatioSolverResult);
+
     document.getElementById("resetBtn").addEventListener("click", () => {
       setDefaults();
       calculate();
@@ -684,6 +1058,8 @@ link.download = safeScenarioName
     document.getElementById("loadInputsBtn").addEventListener("click", loadInputs);
     document.getElementById("clearSavedInputsBtn").addEventListener("click", clearSavedInputs);
     document.getElementById("exportInputsBtn").addEventListener("click", exportInputs);
+    document.getElementById("exportProjectionCsvBtn")?.addEventListener("click", exportProjectionCsv);
+    document.getElementById("exportSummaryCsvBtn")?.addEventListener("click", exportSummaryCsv);
 
     document.getElementById("economicEventCountBadge")?.addEventListener("click", () => {
       openInputSection("economicEventsSection");
@@ -691,6 +1067,10 @@ link.download = safeScenarioName
 
     document.getElementById("lumpSumCountBadge")?.addEventListener("click", () => {
       openInputSection("lumpSumSection");
+    });
+
+    document.getElementById("surplusHandlingBadge")?.addEventListener("click", () => {
+      openInputSection("ratesAssumptionsSection");
     });
 
     document.getElementById("importInputsBtn").addEventListener("click", () => {
@@ -712,6 +1092,20 @@ link.download = safeScenarioName
         calculate();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
       });
+    });
+
+
+    // V3.6.1 regression guard: ensure Lump Sum 5 always triggers recalculation.
+    ["lumpSum5Type", "lumpSum5Person", "lumpSum5Age", "lumpSum5AgeMonth", "lumpSum5Account", "lumpSum5Amount"].forEach(id => {
+      const control = document.getElementById(id);
+      if (control && !control.dataset.lumpSum5Bound) {
+        control.dataset.lumpSum5Bound = "1";
+        control.addEventListener("change", () => {
+          updateActiveInputNotices();
+          calculate();
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(collectPlannerInputs()));
+        });
+      }
     });
 
     document.querySelectorAll("input[type='text']").forEach(el => {
@@ -863,7 +1257,7 @@ link.download = safeScenarioName
 
 
   function clearLumpSumValidationMessages() {
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       const existing = document.getElementById("lumpSum" + i + "ValidationError");
       if (existing) existing.remove();
     }
@@ -871,7 +1265,7 @@ link.download = safeScenarioName
 
   function updateLumpSumAvailableBalances(result) {
     const balances = result && result.lumpSumAvailableBalances ? result.lumpSumAvailableBalances : {};
-    for (let i = 1; i <= 5; i++) {
+    for (let i = 1; i <= 7; i++) {
       const id = "lumpSum" + i + "AvailableBalance";
       const element = document.getElementById(id);
       if (element) element.textContent = formatMoney(Number(balances[id] || 0));
@@ -894,6 +1288,118 @@ link.download = safeScenarioName
 
   let calculationRequestSequence = 0;
   let activeCalculationController = null;
+
+  let lastFundingRatioSolverResult = null;
+  let fundingRatioSolverController = null;
+
+  function setSolverText(id, text) {
+    const element = document.getElementById(id);
+    if (element) element.textContent = text;
+  }
+
+  function clearFundingRatioSolverResult(message) {
+    lastFundingRatioSolverResult = null;
+    setSolverText("solverAnnualBeforeTax", "--");
+    setSolverText("solverMonthlyBeforeTax", "--");
+    setSolverText("solverAnnualAfterTax", "--");
+    setSolverText("solverMonthlyAfterTax", "--");
+    const status = document.getElementById("fundingRatioSolverStatus");
+    if (status) status.textContent = message || "Run the solver to calculate supported income.";
+    const applyButton = document.getElementById("applyFundingRatioSolverBtn");
+    if (applyButton) applyButton.disabled = true;
+  }
+
+  async function runFundingRatioSolver() {
+    const targetRatio = Number(selected("solverTargetFundingRatio"));
+    const status = document.getElementById("fundingRatioSolverStatus");
+    const runButton = document.getElementById("runFundingRatioSolverBtn");
+    const applyButton = document.getElementById("applyFundingRatioSolverBtn");
+
+    if (!Number.isFinite(targetRatio) || targetRatio <= 0) {
+      if (status) status.textContent = "Choose a valid desired funding ratio.";
+      return;
+    }
+
+    if (fundingRatioSolverController) fundingRatioSolverController.abort();
+    fundingRatioSolverController = new AbortController();
+
+    if (runButton) runButton.disabled = true;
+    if (applyButton) applyButton.disabled = true;
+    if (status) status.textContent = "Solving with the full monthly projection...";
+
+    try {
+      const response = await fetch(API_BASE_URL + "/api/solve-funding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetFundingRatio: targetRatio,
+          baseInputs: collectPlannerInputs().values
+        }),
+        signal: fundingRatioSolverController.signal
+      });
+
+      let result = {};
+      try {
+        result = await response.json();
+      } catch (error) {
+        result = {};
+      }
+
+      if (!response.ok) {
+        throw new Error(result.error || "The funding-ratio solver could not complete the calculation.");
+      }
+
+      lastFundingRatioSolverResult = result;
+      setSolverText("solverAnnualBeforeTax", formatMoney(result.annualBeforeTax));
+      setSolverText("solverMonthlyBeforeTax", formatMoney(result.monthlyBeforeTax));
+      setSolverText("solverAnnualAfterTax", formatMoney(result.annualAfterTax));
+      setSolverText("solverMonthlyAfterTax", formatMoney(result.monthlyAfterTax));
+
+      if (status) {
+        status.textContent =
+          "Target " + targetRatio.toFixed(0) + "% · achieved " + Number(result.achievedFundingRatio || 0).toFixed(1) +
+          "% · solved using the current V3.7 scenario assumptions.";
+      }
+      if (applyButton) applyButton.disabled = false;
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+      clearFundingRatioSolverResult(error.message || "Funding-ratio solver failed.");
+    } finally {
+      if (runButton) runButton.disabled = false;
+    }
+  }
+
+  function applyFundingRatioSolverResult() {
+    if (!lastFundingRatioSolverResult) return;
+
+    const frequency = selected("desiredIncomeFrequency");
+    const amount = frequency === "monthly"
+      ? Number(lastFundingRatioSolverResult.monthlyBeforeTax || 0)
+      : Number(lastFundingRatioSolverResult.annualBeforeTax || 0);
+
+    const incomeView = document.getElementById("incomeView");
+    const desiredIncome = document.getElementById("desiredIncome");
+    if (!desiredIncome || !Number.isFinite(amount) || amount <= 0) return;
+
+    if (incomeView) incomeView.value = "beforeTax";
+
+    const roundedAmount = frequency === "monthly"
+      ? Math.round(amount / 50) * 50
+      : Math.round(amount / 500) * 500;
+
+    const existing = Array.from(desiredIncome.options).find(option => Number(option.value) === roundedAmount);
+    if (!existing) {
+      const option = document.createElement("option");
+      option.value = String(roundedAmount);
+      option.textContent = formatMoney(roundedAmount);
+      desiredIncome.appendChild(option);
+    }
+    desiredIncome.value = String(roundedAmount);
+    calculate();
+
+    const status = document.getElementById("fundingRatioSolverStatus");
+    if (status) status.textContent = "Applied " + formatMoney(roundedAmount) + " as the before-tax desired " + frequency + " income.";
+  }
 
   async function calculate() {
     const requestSequence = ++calculationRequestSequence;
@@ -951,6 +1457,7 @@ link.download = safeScenarioName
       }
 
       const rows = result.rows || [];
+      lastProjectionRows = rows;
       updateSummary(rows);
       drawIncomeChart(rows);
       drawBalanceChart(rows);
@@ -981,6 +1488,10 @@ link.download = safeScenarioName
 
 
   function personInvestmentAtRetirement(rows, personKey) {
+    const exactKey = personKey === "p1" ? "p1InvestmentAtRetirement" : "p2InvestmentAtRetirement";
+    const exactRow = (rows || []).find(item => item[exactKey] !== null && item[exactKey] !== undefined && Number.isFinite(Number(item[exactKey])));
+    if (exactRow) return Number(exactRow[exactKey]) || 0;
+
     const retirementAgeMonths = personKey === "p1"
       ? ageInTotalMonths("p1RetirementAge", "p1RetirementAgeMonth")
       : ageInTotalMonths("p2RetirementAge", "p2RetirementAgeMonth");
@@ -991,18 +1502,11 @@ link.download = safeScenarioName
     });
 
     if (!row) return 0;
-
     if (personKey === "p1") {
-      return (row.endingP1RRSP || 0) +
-        (row.endingP1TFSA || 0) +
-        (row.endingP1NonRegistered || 0);
+      return (row.endingP1RRSP || 0) + (row.endingP1TFSA || 0) + (row.endingP1NonRegistered || 0);
     }
-
-    return (row.endingP2RRSP || 0) +
-      (row.endingP2TFSA || 0) +
-      (row.endingP2NonRegistered || 0);
+    return (row.endingP2RRSP || 0) + (row.endingP2TFSA || 0) + (row.endingP2NonRegistered || 0);
   }
-
 
 
   function rowDisplayTotalIncome(row, divisor) {
@@ -1011,6 +1515,7 @@ link.download = safeScenarioName
       chartValue(row, "rrifMinimumWithdrawal", divisor) +
       chartValue(row, "tfsaWithdrawal", divisor) +
       chartValue(row, "nonRegisteredWithdrawal", divisor) +
+      chartValue(row, "surplusSavingsWithdrawal", divisor) +
       chartValue(row, "cpp", divisor) +
       chartValue(row, "oas", divisor) +
       chartValue(row, "dbPension", divisor) +
@@ -1023,7 +1528,7 @@ link.download = safeScenarioName
   function rowAfterTaxTotalIncomeAnnual(row) {
     const p1Tax = (row.p1TaxableIncome || 0) * (row.p1AverageTaxRate || 0);
     const p2Tax = (row.p2TaxableIncome || 0) * (row.p2AverageTaxRate || 0);
-    return Math.max(0, (row.p1TotalIncome || 0) + (row.p2TotalIncome || 0) - p1Tax - p2Tax);
+    return Math.max(0, (row.p1TotalIncome || 0) + (row.p2TotalIncome || 0) + (row.surplusSavingsWithdrawal || 0) - p1Tax - p2Tax);
   }
 
   function updateScenarioSummary(firstRetirementRow) {
@@ -1032,12 +1537,16 @@ link.download = safeScenarioName
       if (el) el.textContent = text;
     };
 
+    const firstRetirementPeriodMonths = firstRetirementRow
+      ? Math.max(1, Number(firstRetirementRow.periodMonths || 12))
+      : 12;
+
     const desiredPreTax = firstRetirementRow
-      ? (firstRetirementRow.targetBeforeTaxAnnual || firstRetirementRow.targetAnnual || 0)
+      ? (firstRetirementRow.targetBeforeTaxAnnual || firstRetirementRow.targetAnnual || 0) * (12 / firstRetirementPeriodMonths)
       : 0;
 
     const actualAfterTaxMonthly = firstRetirementRow
-      ? rowAfterTaxTotalIncomeAnnual(firstRetirementRow) / 12
+      ? rowAfterTaxTotalIncomeAnnual(firstRetirementRow) / firstRetirementPeriodMonths
       : 0;
 
     setText("scenarioDesiredPreTax", formatMoney(desiredPreTax));
@@ -1047,14 +1556,44 @@ link.download = safeScenarioName
     setText("scenarioInflation", value("inflationRate").toFixed(1) + "%");
     setText("scenarioHomeGrowth", value("homeGrowthRate").toFixed(1) + "%");
     setText("scenarioP1RetAge", formatAgeYearsMonths(ageInYears("p1RetirementAge", "p1RetirementAgeMonth")));
+    setText("scenarioP1DeathAge", Math.round(value("p1LifeExpectancy")) + "y");
 
     if (selected("householdMode") === "couple") {
       setText("scenarioP2RetAge", formatAgeYearsMonths(ageInYears("p2RetirementAge", "p2RetirementAgeMonth")));
+      setText("scenarioP2DeathAge", Math.round(value("p2LifeExpectancy")) + "y");
     } else {
       setText("scenarioP2RetAge", "N/A");
+      setText("scenarioP2DeathAge", "N/A");
     }
   }
 
+
+  function formatShortfallAgeFromRow(row) {
+    if (!row) return "";
+    if (row.aliveLabel === "Person 1") return "Person 1 age " + formatAgeYearsMonths(row.p1AgeValue || 0);
+    if (row.aliveLabel === "Person 2") return "Person 2 age " + formatAgeYearsMonths(row.p2AgeValue || 0);
+    if (row.aliveLabel === "Both") {
+      return "P1 age " + formatAgeYearsMonths(row.p1AgeValue || 0) +
+        " / P2 age " + formatAgeYearsMonths(row.p2AgeValue || 0);
+    }
+    return row.ageLabel ? "Age " + row.ageLabel : "";
+  }
+
+  function firstFundsDepletedAge(rows) {
+    const retirementRows = (rows || []).filter(row => row.isRetirementProjectionYear);
+
+    const depletedRow = retirementRows.find(row => {
+      const totalFunds =
+        Number(row.remainingRRSP || 0) +
+        Number(row.remainingTFSA || 0) +
+        Number(row.remainingNonRegistered || 0) +
+        Number(row.surplusSavingsBalance || 0);
+
+      return totalFunds <= 0.01;
+    });
+
+    return formatShortfallAgeFromRow(depletedRow);
+  }
 
   function updateSummary(rows, p1, p2, realReturn, postRetirementRealReturn, monthlyPostRetirementRealReturn) {
     updateActiveInputNotices();
@@ -1070,7 +1609,8 @@ link.download = safeScenarioName
     document.getElementById("metricTFSA").textContent = selected("householdMode") === "couple"
       ? formatMoney(personInvestmentAtRetirement(rows, "p2"))
       : "N/A";
-    const metricTargetValue = first.targetDisplayAnnual || first.targetAnnual || 0;
+    const firstTargetPeriodMonths = Math.max(1, Number(first.periodMonths || 12));
+    const metricTargetValue = (first.targetDisplayAnnual || first.targetAnnual || 0) * (12 / firstTargetPeriodMonths);
 
     document.getElementById("metricTarget").textContent = formatMoney(metricTargetValue / divisor);
 
@@ -1083,7 +1623,7 @@ link.download = safeScenarioName
     if (p2MetricCard) {
       p2MetricCard.title = "Total projected Person 2 investments in the year Person 2 retires: RRSP/RRIF, TFSA, and non-registered.";
     }
-    document.getElementById("metricRemaining").textContent = formatMoney(last.remainingRRSP + last.remainingTFSA + last.remainingNonRegistered);
+    document.getElementById("metricRemaining").textContent = formatMoney((last.remainingRRSP || 0) + (last.remainingTFSA || 0) + (last.remainingNonRegistered || 0) + (last.surplusSavingsBalance || 0));
 
     const homeMetric = document.getElementById("metricHomeValue");
     const homeCard = document.getElementById("metricHomeCard");
@@ -1110,7 +1650,8 @@ link.download = safeScenarioName
       const endingSavings =
         (last.remainingRRSP || 0) +
         (last.remainingTFSA || 0) +
-        (last.remainingNonRegistered || 0);
+        (last.remainingNonRegistered || 0) +
+        (last.surplusSavingsBalance || 0);
 
       const lifetimeCoveredIncome = retirementRows.reduce((sum, row) => {
         const availableIncome = rowDisplayTotalIncome(row, 1);
@@ -1129,6 +1670,13 @@ link.download = safeScenarioName
         : 0;
 
       goalValue.textContent = fundingRatioPercent.toFixed(0) + "%";
+
+      const goalShortfallAge = document.getElementById("metricGoalShortfallAge");
+      const fundsDepletedAgeText = firstFundsDepletedAge(rows);
+      if (goalShortfallAge) {
+        goalShortfallAge.textContent = fundsDepletedAgeText ? "Funds depleted: " + fundsDepletedAgeText : "";
+        goalShortfallAge.classList.toggle("hidden", !fundsDepletedAgeText);
+      }
 
       if (status) {
         if (fundingRatioPercent >= 110) {
@@ -1149,6 +1697,7 @@ link.download = safeScenarioName
         ". Income Required: " + formatMoney(lifetimeRequiredIncome) +
         ". Lifetime Shortfall: " + formatMoney(lifetimeShortfall) +
         ". Ending Savings: " + formatMoney(endingSavings) +
+        (fundsDepletedAgeText ? ". Funds depleted at: " + fundsDepletedAgeText : ". Funds are not depleted during the projection") +
         ". Formula: (covered income + ending savings) divided by required income.";
 
       goalCard.title = noteText;
@@ -1158,11 +1707,12 @@ link.download = safeScenarioName
     const metricRemainingCard = document.getElementById("metricRemainingCard");
     if (metricRemainingCard) {
       metricRemainingCard.title =
-        "Final projected total at the last projection age. Includes ending RRSP/RRIF, TFSA, and non-registered balances. See the projection table for opening and ending RRSP/RRIF balances by year.";
+        "Final projected total at the last projection age. Includes ending RRSP/RRIF, TFSA, non-registered balances, and any surplus savings/GIC balance.";
     }
 
     const viewText = selected("incomeView") === "afterTax" ? "after-tax target grossed up using tax brackets" : "before tax";
     const targetNoteText =
+      "Household target for all people in the scenario, annualized from the first retirement period; " +
       getDisplayLabel().toLowerCase() + ", " + viewText +
       ". Real return before retirement: " + (realReturn * 100).toFixed(2) +
       "%. Post-retirement investment return used: " + (postRetirementRealReturn * 100).toFixed(2) +
@@ -1191,7 +1741,7 @@ link.download = safeScenarioName
       return ((p1Share * (1 - p1TaxRate)) + (p2Share * (1 - p2TaxRate))) / divisor;
     }
 
-    if (key === "tfsaWithdrawal" || key === "nonRegisteredWithdrawal") {
+    if (key === "tfsaWithdrawal" || key === "nonRegisteredWithdrawal" || key === "surplusSavingsWithdrawal") {
       return (row[key] || 0) / divisor;
     }
 
@@ -1245,6 +1795,7 @@ link.download = safeScenarioName
           chartValue(row, "rrifMinimumWithdrawal", divisor) +
           chartValue(row, "tfsaWithdrawal", divisor) +
           chartValue(row, "nonRegisteredWithdrawal", divisor) +
+          chartValue(row, "surplusSavingsWithdrawal", divisor) +
           chartValue(row, "cpp", divisor) +
           chartValue(row, "oas", divisor) +
           chartValue(row, "dbPension", divisor) +
@@ -1261,7 +1812,7 @@ link.download = safeScenarioName
 
     incomeChart = new Chart(ctx, {
       data: {
-        labels: rows.map(row => "Year " + row.year + " (" + row.ageLabel + ")"),
+        labels: rows.map(row => (row.periodLabel || ("Year " + row.year)) + " (" + row.ageLabel + ")"),
         datasets: [
           {
             type: "bar",
@@ -1289,6 +1840,13 @@ link.download = safeScenarioName
             label: "Non-registered withdrawals",
             data: rows.map(row => chartValue(row, "nonRegisteredWithdrawal", divisor)),
             backgroundColor: "#0891b2",
+            stack: "income"
+          },
+          {
+            type: "bar",
+            label: "Surplus savings / GIC withdrawals",
+            data: rows.map(row => chartValue(row, "surplusSavingsWithdrawal", divisor)),
+            backgroundColor: "#a16207",
             stack: "income"
           },
           {
@@ -1450,7 +2008,7 @@ link.download = safeScenarioName
     balanceChart = new Chart(ctx, {
       type: "line",
       data: {
-        labels: rows.map(row => "Year " + row.year + " (" + row.ageLabel + ")"),
+        labels: rows.map(row => (row.periodLabel || ("Year " + row.year)) + " (" + row.ageLabel + ")"),
         datasets: [
           {
             label: "Person 1 RRSP/RRIF balance",
@@ -1507,6 +2065,17 @@ link.download = safeScenarioName
             pointHoverRadius: 5,
             fill: false,
             tension: 0.25
+          },
+          {
+            label: "Surplus savings / GIC balance",
+            data: rows.map(row => row.surplusSavingsBalance || 0),
+            borderColor: "#a16207",
+            backgroundColor: "#a16207",
+            borderWidth: 3,
+            pointRadius: 1,
+            pointHoverRadius: 5,
+            fill: false,
+            tension: 0.25
           }
         ]
       },
@@ -1557,6 +2126,7 @@ link.download = safeScenarioName
         (row.rrifMinimumWithdrawal || 0) +
         (row.tfsaWithdrawal || 0) +
         (row.nonRegisteredWithdrawal || 0) +
+        (row.surplusSavingsWithdrawal || 0) +
         (row.cpp || 0) +
         (row.oas || 0) +
         (row.dbPension || 0) +
@@ -1567,7 +2137,7 @@ link.download = safeScenarioName
 
       const householdRow = document.createElement("tr");
       householdRow.innerHTML = `
-        <td>${row.year}</td>
+        <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
         <td>${row.ageLabel}</td>
         <td>${row.aliveLabel}</td>
         <td>${formatMoney((row.targetAnnual || 0) / divisor)}</td>
@@ -1582,12 +2152,15 @@ link.download = safeScenarioName
         <td>${formatMoney(row.endingRRSP || row.remainingRRSP || 0)}</td>
         <td>${formatMoney(row.remainingTFSA || 0)}</td>
         <td>${formatMoney(row.remainingNonRegistered || 0)}</td>
+        <td>${formatMoney((row.surplusSavingsReinvested || 0) / divisor)}</td>
+        <td>${formatMoney((row.surplusSavingsWithdrawal || 0) / divisor)}</td>
+        <td>${formatMoney(row.surplusSavingsBalance || 0)}</td>
       `;
       householdBody.appendChild(householdRow);
 
       const p1Row = document.createElement("tr");
       p1Row.innerHTML = `
-        <td>${row.year}</td>
+        <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
         <td>${p1Age}</td>
         <td>${formatMoney((row.p1_cpp || 0) / divisor)}</td>
         <td>${formatMoney((row.p1_oas || 0) / divisor)}</td>
@@ -1611,7 +2184,7 @@ link.download = safeScenarioName
       if (p2Body && isCoupleModeForDisplay()) {
         const p2Row = document.createElement("tr");
         p2Row.innerHTML = `
-          <td>${row.year}</td>
+          <td>${escapeHtml(row.periodLabel || String(row.year))}</td>
           <td>${p2Age}</td>
           <td>${formatMoney((row.p2_cpp || 0) / divisor)}</td>
           <td>${formatMoney((row.p2_oas || 0) / divisor)}</td>
