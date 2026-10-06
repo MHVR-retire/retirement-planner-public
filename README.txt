@@ -1,4 +1,4 @@
-V3.8: Public application code is unchanged from V3.7.9; the tax-indexing correction is in the private calculation engine.
+V3.8.1: Public application code is unchanged from V3.7.9; the tax-indexing correction is in the private calculation engine.
 
 Retirement Planner V2.0 - Public Front End
 
@@ -85,4 +85,7 @@ V3.7.8 funding-ratio reconciliation:
 - Browser cache key bumped to client.js?v=3.7.8.
 
 
-V3.8 changes: life-insurance death benefits; survivor lifestyle funding before survivor retirement; death-age selectors start at 68.
+V3.8.1 changes: life-insurance death benefits; survivor lifestyle funding before survivor retirement; death-age selectors start at 68.
+
+
+V3.8.1 changes: life-insurance benefits remain fixed exact-dollar amounts with no inflation adjustment; simplified P2 survivor CPP is 37.5% of P1 CPP while P2 is under 65 and 60% from age 65 onward, payable immediately after P1 death.
