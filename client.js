@@ -1719,7 +1719,7 @@ link.download = safeScenarioName
         ? ((lifetimeCoveredIncome + endingSavings) / lifetimeRequiredIncome) * 100
         : 0;
 
-      goalValue.textContent = fundingRatioPercent.toFixed(2) + "%";
+      goalValue.textContent = fundingRatioPercent.toFixed(0) + "%";
 
       const goalShortfallAge = document.getElementById("metricGoalShortfallAge");
       const fundsDepletedAgeText = firstFundsDepletedAge(rows);
